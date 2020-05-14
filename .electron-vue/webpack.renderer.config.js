@@ -1,16 +1,16 @@
-"use strict";
+'use strict'
 
-process.env.BABEL_ENV = "renderer";
-const fs = require("fs-extra");
-const path = require("path");
-const { dependencies } = require("../package.json");
-const webpack = require("webpack");
+process.env.BABEL_ENV = 'renderer'
+const fs = require('fs-extra')
+const path = require('path')
+const { dependencies } = require('../package.json')
+const webpack = require('webpack')
 
-const BabiliWebpackPlugin = require("babili-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { VueLoaderPlugin } = require("vue-loader");
+const BabiliWebpackPlugin = require('babili-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 
 /**
  * List of node_modules to include in webpack bundle
@@ -19,253 +19,256 @@ const { VueLoaderPlugin } = require("vue-loader");
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
  */
-let whiteListedModules = ["vue"];
+let whiteListedModules = ['vue']
 
-const entries = {};
-const htmlPlugins = [];
+const entries = {}
+const htmlPlugins = []
 
 htmlPlugins.push(
-  new HtmlWebpackPlugin({
-    filename: `index.html`,
-    template: path.resolve(__dirname, "../src/index.ejs"),
-    chunks: ["renderer"],
-    minify: {
-      collapseWhitespace: true,
-      removeAttributeQuotes: true,
-      removeComments: true,
-    },
-    nodeModules:
-      process.env.NODE_ENV !== "production"
-        ? path.resolve(__dirname, "../node_modules")
-        : false,
-  })
-);
+    new HtmlWebpackPlugin({
+        filename: `index.html`,
+        template: path.resolve(__dirname, '../src/index.ejs'),
+        chunks: ['index'],
+        minify: {
+            collapseWhitespace: true,
+            removeAttributeQuotes: true,
+            removeComments: true
+        },
+        nodeModules:
+            process.env.NODE_ENV !== 'production'
+                ? path.resolve(__dirname, '../node_modules')
+                : false
+    })
+)
 
-entries[`renderer`] = path.join(__dirname, `../src/renderer/main.js`);
+entries[`index`] = path.join(__dirname, `../src/renderer/index.ts`)
 
 let rendererConfig = {
-  devtool: "#cheap-module-eval-source-map",
-  entry: entries,
-  externals: [
-    ...Object.keys(dependencies || {}).filter(
-      (d) => !whiteListedModules.includes(d)
-    ),
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-        ],
-      },
-      {
-        test: /\.postcss$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-        ],
-      },
-      {
-        test: /\.less$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-          { loader: "less-loader", options: { sourceMap: true } },
-        ],
-      },
-      {
-        test: /\.sass$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-          {
-            loader: "sass-loader",
-            options: { indentedSyntax: true, sourceMap: true },
-          },
-        ],
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-          { loader: "sass-loader", options: { sourceMap: true } },
-        ],
-      },
-      {
-        test: /\.stylus$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-          { loader: "stylus-loader", options: { sourceMap: true } },
-        ],
-      },
-      {
-        test: /\.styl$/,
-        use: [
-          "vue-style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: true, sourceMap: true },
-          },
-          { loader: "stylus-loader", options: { sourceMap: true } },
-        ],
-      },
-      {
-        test: /\.html$/,
-        use: "vue-html-loader",
-      },
-
-      {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
-        exclude: /node_modules/,
-        options: {
-          appendTsSuffixTo: [/\.vue$/],
-          transpileOnly: true,
-        },
-      },
-      {
-        test: /\.js$/,
-        use: "babel-loader",
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.node$/,
-        use: "node-loader",
-      },
-      {
-        test: /\.vue$/,
-        use: {
-          loader: "vue-loader",
-          options: {
-            extractCSS: process.env.NODE_ENV === "production",
-            loaders: {
-              sass: "vue-style-loader!css-loader!sass-loader?indentedSyntax=1",
-              scss: "vue-style-loader!css-loader!sass-loader",
-              stylus: "vue-style-loader!css-loader!stylus-loader",
-              less: "vue-style-loader!css-loader!less-loader",
-            },
-          },
-        },
-      },
-      {
-        test: /\.(png|jpe?g|gif)(\?.*)?$/,
-        use: {
-          loader: "url-loader",
-          query: {
-            limit: 10000,
-            name: "imgs/[name]--[folder].[ext]",
-          },
-        },
-      },
-      {
-        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        loader: "url-loader",
-        options: {
-          limit: 10000,
-          name: "media/[name]--[folder].[ext]",
-        },
-      },
-      {
-        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
-        use: {
-          loader: "url-loader",
-          query: {
-            limit: 100000,
-            name: "fonts/[name]--[folder].[ext]",
-          },
-        },
-      },
+    devtool: '#cheap-module-eval-source-map',
+    entry: entries,
+    externals: [
+        ...Object.keys(dependencies || {}).filter(
+            (d) => !whiteListedModules.includes(d)
+        )
     ],
-  },
-  node: {
-    __dirname: process.env.NODE_ENV !== "production",
-    __filename: process.env.NODE_ENV !== "production",
-  },
-  plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: path.join(__dirname, "../src/renderer/assets/static"),
-        to: path.join(__dirname, "../dist/electron/static"),
-        ignore: [".*"],
-      },
-    ]),
-    new VueLoaderPlugin(),
-    new MiniCssExtractPlugin({ filename: "styles.css" }),
-    ...htmlPlugins,
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-  ],
-  output: {
-    filename: "[name].js",
-    libraryTarget: "commonjs2",
-    path: path.join(__dirname, "../dist/electron"),
-  },
-  resolve: {
-    alias: {
-      "@": path.join(__dirname, "../src/renderer"),
-      "#": path.join(__dirname, "../src/main"),
-      vue$: "vue/dist/vue.esm.js",
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    }
+                ]
+            },
+            {
+                test: /\.postcss$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    }
+                ]
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    },
+                    { loader: 'less-loader', options: { sourceMap: true } }
+                ]
+            },
+            {
+                test: /\.sass$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: { indentedSyntax: true, sourceMap: true }
+                    }
+                ]
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    },
+                    { loader: 'sass-loader', options: { sourceMap: true } }
+                ]
+            },
+            {
+                test: /\.stylus$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    },
+                    { loader: 'stylus-loader', options: { sourceMap: true } }
+                ]
+            },
+            {
+                test: /\.styl$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true, sourceMap: true }
+                    },
+                    { loader: 'stylus-loader', options: { sourceMap: true } }
+                ]
+            },
+            {
+                test: /\.html$/,
+                use: 'vue-html-loader'
+            },
+
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                exclude: /node_modules/,
+                options: {
+                    appendTsSuffixTo: [/\.vue$/],
+                    transpileOnly: true
+                }
+            },
+            {
+                test: /\.js$/,
+                use: 'babel-loader',
+                exclude: /node_modules/
+            },
+            {
+                test: /\.node$/,
+                use: 'node-loader'
+            },
+            {
+                test: /\.vue$/,
+                use: {
+                    loader: 'vue-loader',
+                    options: {
+                        extractCSS: process.env.NODE_ENV === 'production',
+                        loaders: {
+                            sass:
+                                'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
+                            scss: 'vue-style-loader!css-loader!sass-loader',
+                            stylus: 'vue-style-loader!css-loader!stylus-loader',
+                            less: 'vue-style-loader!css-loader!less-loader'
+                        }
+                    }
+                }
+            },
+            {
+                test: /\.(png|jpe?g|gif)(\?.*)?$/,
+                use: {
+                    loader: 'url-loader',
+                    query: {
+                        limit: 10000,
+                        name: 'imgs/[name]--[folder].[ext]'
+                    }
+                }
+            },
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'media/[name]--[folder].[ext]'
+                }
+            },
+            {
+                test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
+                use: {
+                    loader: 'url-loader',
+                    query: {
+                        limit: 100000,
+                        name: 'fonts/[name]--[folder].[ext]'
+                    }
+                }
+            }
+        ]
     },
-    extensions: [".js", ".ts", ".vue", ".json", ".css", ".node"],
-  },
-  target: "electron-renderer",
-};
+    node: {
+        __dirname: process.env.NODE_ENV !== 'production',
+        __filename: process.env.NODE_ENV !== 'production'
+    },
+    plugins: [
+        new CopyWebpackPlugin([
+            {
+                from: path.join(__dirname, '../src/renderer/assets/static'),
+                to: path.join(__dirname, '../dist/electron/static'),
+                ignore: ['.*']
+            }
+        ]),
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({ filename: 'styles.css' }),
+        ...htmlPlugins,
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+    ],
+    output: {
+        filename: '[name].js',
+        libraryTarget: 'commonjs2',
+        path: path.join(__dirname, '../dist/electron')
+    },
+    resolve: {
+        alias: {
+            '@': path.join(__dirname, '../src/renderer'),
+            '#': path.join(__dirname, '../src/main'),
+            vue$: 'vue/dist/vue.esm.js'
+        },
+        extensions: ['.js', '.ts', '.vue', '.json', '.css', '.node']
+    },
+    target: 'electron-renderer'
+}
 
 /**
  * Adjust rendererConfig for development settings
  */
-if (process.env.NODE_ENV !== "production") {
-  rendererConfig.plugins.push(
-    new webpack.DefinePlugin({
-      __static: `"${path.join(__dirname, "../static").replace(/\\/g, "\\\\")}"`,
-    })
-  );
+if (process.env.NODE_ENV !== 'production') {
+    rendererConfig.plugins.push(
+        new webpack.DefinePlugin({
+            __static: `"${path
+                .join(__dirname, '../static')
+                .replace(/\\/g, '\\\\')}"`
+        })
+    )
 }
 
 /**
  * Adjust rendererConfig for production settings
  */
-if (process.env.NODE_ENV === "production") {
-  rendererConfig.devtool = "";
+if (process.env.NODE_ENV === 'production') {
+    rendererConfig.devtool = ''
 
-  rendererConfig.plugins.push(
-    new BabiliWebpackPlugin(),
-    new CopyWebpackPlugin([
-      {
-        from: path.join(__dirname, "../static"),
-        to: path.join(__dirname, "../dist/electron/static"),
-        ignore: [".*"],
-      },
-    ]),
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": '"production"',
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-    })
-  );
+    rendererConfig.plugins.push(
+        new BabiliWebpackPlugin(),
+        new CopyWebpackPlugin([
+            {
+                from: path.join(__dirname, '../static'),
+                to: path.join(__dirname, '../dist/electron/static'),
+                ignore: ['.*']
+            }
+        ]),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': '"production"'
+        }),
+        new webpack.LoaderOptionsPlugin({
+            minimize: true
+        })
+    )
 }
 
-module.exports = rendererConfig;
+module.exports = rendererConfig

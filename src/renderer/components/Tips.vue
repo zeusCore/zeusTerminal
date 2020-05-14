@@ -1,14 +1,14 @@
 <template>
-  <section class="fuck-input-tips">
-  </section>
+    <section class="fuck-input-tips"></section>
 </template>
 
-<script>
-import { Vue, Component } from "vue-property-decorator";
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+import motx from '@/motx'
 
-@Component({ components: { CTips, CFooter, CXTerm } })
+@Component({ components: {} })
 export default class App extends Vue {
-  mounted() {}
+    mounted() {}
 }
 </script>
 

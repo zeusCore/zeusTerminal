@@ -1,28 +1,31 @@
 <template>
-  <section class="fuck-footer">
-    <input type="text"
-           @keydown.enter="handleEnter"
-           @input="handleInput"
-           @blur="handleBlur">
-  </section>
+    <section class="fuck-footer">
+        <input
+            type="text"
+            @keydown.enter="handleEnter"
+            @input="handleInput"
+            @blur="handleBlur"
+        />
+    </section>
 </template>
 
-<script>
-import { Vue, Component } from "vue-property-decorator";
-@Component({ components: { CTips, CFooter, CXTerm } })
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+import motx from '@/motx'
+@Component({ components: {} })
 export default class App extends Vue {
-  mounted() {}
-  handleEnter(e) {
-    this.$emit("enter", e.target.value);
-  }
-  handleInput(e) {
-    this.$emit("input", e.target.value);
-  }
-  handleBlur(e) {
-    this.$emit("blur", e.target.value);
-  }
+    mounted() {}
+    handleEnter(e) {
+        motx.publish('input-enter', e.target.value)
+        e.target.value = ''
+    }
+    handleInput(e) {
+        motx.publish('input-keydown', e.target.value)
+    }
+    handleBlur(e) {
+        motx.publish('input-blur', e.target.value)
+    }
 }
 </script>
 
-<style>
-</style>
+<style></style>
