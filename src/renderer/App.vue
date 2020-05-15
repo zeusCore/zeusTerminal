@@ -1,20 +1,19 @@
 <template>
-    <section>
-        <CXTerm />
-        <CTips />
-        <CFooter />
-    </section>
+  <section class="fuck-term-app"
+           flex>
+    <CXTerm />
+    <CEditer />
+  </section>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 
-import CTips from './components/Tips.vue'
-import CFooter from './components/Footer.vue'
+import CEditer from './components/Editor.vue'
 import CXTerm from './components/XTerm.vue'
 import './style/base.styl'
 
-@Component({ components: { CTips, CFooter, CXTerm } })
+@Component({ components: { CEditer, CXTerm } })
 export default class App extends Vue {
     mounted() {}
 }

@@ -9,10 +9,10 @@ exec('rm -rf build', function(err, out) {
 })
 
 const base = {
-    productName: 'SuperBrain',
-    artifactName: 'SuperBrain-Setup-${version}.${ext}',
-    appId: 'com.passkee.superbrain',
-    copyright: 'Copyright © 2018 Passkee.com',
+    productName: 'tumax-term',
+    artifactName: 'tumax-terminal-setup-${version}.${ext}',
+    appId: 'com.tumax.tumax-terminal',
+    copyright: 'Copyright © 2018 yun.to8to.com',
     directories: {
         output: 'build'
     },
@@ -80,24 +80,12 @@ const win64 = {
     //         { artifactName: 'SuperBrain-Setup-ia32-${version}.${ext}' }
     //     )
     // })
-
-    // const w64 = await builder.build({
-    //     targets: Platform.WINDOWS.createTarget(),
-    //     config: Object.assign(
-    //         {},
-    //         base,
-    //         { win: win64, nsis },
-    //         { artifactName: 'SuperBrain-Setup-x64-${version}.${ext}' }
-    //     )
-    // })
     const m = await builder.build({
         targets: Platform.MAC.createTarget(),
-        config: Object.assign(
-            {},
-            base,
-            { mac, dmg },
-            { artifactName: 'BrainBookcase-Setup-${version}.${ext}' }
-        )
+        config: Object.assign({}, base, { mac, dmg })
     })
-    // console.log(m)
+    const w64 = await builder.build({
+        targets: Platform.WINDOWS.createTarget(),
+        config: Object.assign({}, base, { win: win64, nsis })
+    })
 })()

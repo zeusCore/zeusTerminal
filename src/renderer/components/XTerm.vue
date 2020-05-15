@@ -1,5 +1,6 @@
 <template>
     <section class="fuck-xterm-wrapper">
+        <CTips />
         <section class="fuck-xterm-area" ref="xterm"></section>
     </section>
 </template>
@@ -9,15 +10,15 @@ import { Vue, Component } from 'vue-property-decorator'
 import { Terminal } from 'xterm'
 import os from 'os'
 import 'xterm/css/xterm.css'
-import Fix from 'xterm-addon-fit'
 import { FitAddon } from 'xterm-addon-fit'
 import motx from '@/motx'
+import CTips from './Tips.vue'
 
 const fitAddon = new FitAddon()
 
 const pty = require('node-pty')
 
-const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL']
+const shell = process.env[os.platform() === 'win32' ? 'powershell.exe' : 'bash']
 const env = process.env
 env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
@@ -32,7 +33,7 @@ const ptyProcess = pty.spawn(shell, [], {
     encoding: null
 })
 
-@Component({ components: {} })
+@Component({ components: { CTips } })
 export default class XTerm extends Vue {
     mounted() {
         this.init()
@@ -58,8 +59,13 @@ export default class XTerm extends Vue {
 
         fitAddon.fit()
 
-        motx.subscribe('input-enter', (val) => {
-            ptyProcess.write(val + '\n')
+        motx.subscribe('run', (val) => {
+            if (val[val.length - 1] !== '\n') {
+                ptyProcess.write(val + '\n')
+            } else {
+                ptyProcess.write(val)
+            }
+            xterm.focus()
         })
 
         xterm.onData((data, arg2) => {
@@ -76,7 +82,12 @@ export default class XTerm extends Vue {
 </script>
 
 <style lang="stylus">
-
-.fuck-xterm-area
+.fuck-xterm-wrapper
+  width 60%
+  position fixed
+  left 0
+  top 0
+  bottom 0
+  .fuck-xterm-area
     padding 10px
 </style>

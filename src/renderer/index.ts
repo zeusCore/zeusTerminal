@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV === 'production') {
+    const fixPath = require('fix-path')
+    fixPath()
+}
+
 import Vue from 'vue'
 
 import App from './App.vue'
