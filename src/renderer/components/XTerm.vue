@@ -1,8 +1,9 @@
 <template>
-    <section class="fuck-xterm-wrapper">
-        <CTips />
-        <section class="fuck-xterm-area" ref="xterm"></section>
-    </section>
+  <section class="fuck-xterm-wrapper">
+    <CTips />
+    <section class="fuck-xterm-area"
+             ref="xterm"></section>
+  </section>
 </template>
 
 <script lang="ts">
@@ -18,7 +19,7 @@ const fitAddon = new FitAddon()
 
 const pty = require('node-pty')
 
-const shell = process.env[os.platform() === 'win32' ? 'powershell.exe' : 'bash']
+const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 const env = process.env
 env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
