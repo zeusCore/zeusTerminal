@@ -1,8 +1,9 @@
 <template>
-    <section class="fuck-xterm-wrapper">
-        <CTips />
-        <section class="fuck-xterm-area" ref="xterm"></section>
-    </section>
+  <section class="fuck-xterm-wrapper">
+    <CTips />
+    <section class="fuck-xterm-area"
+             ref="xterm"></section>
+  </section>
 </template>
 
 <script lang="ts">
@@ -11,6 +12,8 @@ import { Terminal } from 'xterm'
 import os from 'os'
 import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
+import { SearchAddon } from 'xterm-addon-search'
+import { WebLinksAddon } from 'xterm-addon-web-links'
 import motx from '@/motx'
 import CTips from './Tips.vue'
 
@@ -35,6 +38,7 @@ const ptyProcess = pty.spawn(shell, [], {
 
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
+    protected base: string = ''
     mounted() {
         this.init()
     }
@@ -54,9 +58,15 @@ export default class XTerm extends Vue {
         })
 
         xterm.loadAddon(fitAddon)
+        xterm.loadAddon(new WebLinksAddon())
+        const searchAddon = new SearchAddon()
+        xterm.loadAddon(searchAddon)
 
         xterm.open(this.$refs.xterm as HTMLElement)
 
+        const active = xterm.buffer.active
+        const line = active.getLine(active.cursorY).translateToString()
+        console.log('[line]', line)
         fitAddon.fit()
 
         motx.subscribe('run', (val) => {
@@ -68,14 +78,44 @@ export default class XTerm extends Vue {
             xterm.focus()
         })
 
-        xterm.onData((data, arg2) => {
-            console.log(data)
+        // onKey onCursorMove onLineFeed onScroll onSelectionChange onRender onResize onTitleChange
+        xterm.onRender((data) => {
+            console.log('[onRender]', data)
+        })
+        xterm.onSelectionChange((data) => {
+            console.log('[onSelectionChange]', data)
+        })
+        xterm.onLineFeed((data) => {
+            console.log('[onLineFeed]', data)
+        })
+        xterm.onCursorMove((data) => {
+            console.log('[onCursorMove]', data)
+        })
+        xterm.onKey((data) => {
+            console.log('[onKey]', data)
+        })
+        xterm.onData((data) => {
+            const active = xterm.buffer.active
+            const line = active.getLine(active.cursorY).translateToString()
+            console.log('[onData]', line)
             ptyProcess.write(data)
         })
 
         ptyProcess.on('data', function(data) {
-            console.log('ptyProcess data', data.toString())
-            xterm.write(data.toString())
+            const line = data.toString()
+            console.log('[ptyProcess]', line)
+            line.trim().split()
+
+            xterm.write(line)
+
+            setTimeout(() => {
+                const active = xterm.buffer.active
+                const line = active.getLine(active.cursorY).translateToString()
+                if (!this.base) {
+                    this.base = line.trim()
+                    console.log(this.base)
+                }
+            })
         })
     }
 }
