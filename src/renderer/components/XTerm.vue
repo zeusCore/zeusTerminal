@@ -133,7 +133,7 @@ export default class XTerm extends Vue {
             if (this.base) {
                 line = line
                     .split(this.base.trim())
-                    .join(`\x1b[33m${this.base}\x1b[0m`)
+                    .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
             }
             xterm.write(line)
             if (this.base.length) {

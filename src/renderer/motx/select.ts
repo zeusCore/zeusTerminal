@@ -12,26 +12,31 @@ export default (motx: MotX) => {
 
     motx.subscribe('tips-onkey', (key) => {
         console.log('tips-onkey', key)
-        const index = motx.getState('currentIndex')
+        let index = motx.getState('currentIndex')
+        let leftSide = motx.getState('leftSide')
         if (index > -1) {
             switch (key) {
                 case 'ArrowDown':
-                    motx.setState('currentIndex', index + 1)
+                    index++
                     break
                 case 'ArrowUp':
                     if (index > 0) {
-                        motx.setState('currentIndex', index - 1)
+                        index--
                     } else {
-                        motx.setState('currentIndex', -1)
-                        motx.publish('xterm-focus-from-tips', '')
+                        index = -1
                     }
                     break
                 case 'ArrowLeft':
-                    motx.setState('leftSide', true)
+                    leftSide = true
                     break
                 case 'ArrowRight':
-                    motx.setState('leftSide', false)
+                    leftSide = false
                     break
+            }
+            motx.setState('currentIndex', index)
+            motx.setState('leftSide', leftSide)
+            if (index === -1) {
+                motx.publish('xterm-focus-from-tips', '')
             }
         }
     })
