@@ -14,11 +14,9 @@ import { Terminal } from 'xterm'
 import os from 'os'
 import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
-import { SearchAddon } from 'xterm-addon-search'
 import { WebLinksAddon } from 'xterm-addon-web-links'
 import motx from '@/motx'
 import CTips from './Tips.vue'
-const fitAddon = new FitAddon()
 
 const pty = require('node-pty')
 
@@ -27,25 +25,44 @@ const env = process.env
 env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
 env['LC_CTYPE'] = 'zh_CN.UTF-8'
+const fitAddons = []
 
-const ptyProcess = pty.spawn(shell, [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.cwd(),
-    env: env,
-    encoding: null
+window.addEventListener('resize', () => {
+    fitAddons.forEach((item) => {
+        item && item.fit()
+    })
 })
-
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     protected base: string = ''
+    protected input: string = ''
     protected recommendFocused: boolean = false
+    protected $xterm: Terminal
+    protected $pty: any
+    protected $fixAddon: any
+    protected $resizeHandler: any
     mounted() {
         this.init()
     }
+
+    beforeDestroy() {
+        fitAddons.splice(fitAddons.indexOf(this.$fixAddon), 1)
+    }
+
     init() {
-        const xterm = new Terminal({
+        const ptyProcess = (this.$pty = pty.spawn(shell, [], {
+            name: 'xterm-color',
+            cols: 80,
+            rows: 30,
+            cwd: process.cwd(),
+            env: env,
+            encoding: null
+        }))
+
+        const fitAddon = (this.$fixAddon = new FitAddon())
+        fitAddons.push(fitAddon)
+
+        const xterm = (this.$xterm = new Terminal({
             rows: 30,
             fontSize: 12,
             lineHeight: 1.2,
@@ -56,22 +73,14 @@ export default class XTerm extends Vue {
                 background: '#222',
                 cursor: 'rgb(254,239,143)'
             }
-        })
+        }))
 
         xterm.loadAddon(fitAddon)
         xterm.loadAddon(new WebLinksAddon())
-        const searchAddon = new SearchAddon()
-        xterm.loadAddon(searchAddon)
 
         xterm.open(this.$refs.xterm as HTMLElement)
 
-        const active = xterm.buffer.active
-        const line = active.getLine(active.cursorY).translateToString()
-        console.log('[line]', line)
         fitAddon.fit()
-        window.addEventListener('resize', () => {
-            fitAddon.fit()
-        })
 
         motx.subscribe('run', (val: string) => {
             val = val.trimStart()
@@ -82,14 +91,21 @@ export default class XTerm extends Vue {
             }
             xterm.focus()
         })
-
-        // onKey onCursorMove onLineFeed onScroll onSelectionChange onRender onResize onTitleChange
-
-        xterm.onLineFeed((data) => {
-            console.log('[onLineFeed]', arguments)
+        xterm.onBinary(() => {
+            console.log('[onBinary]', arguments)
         })
-        xterm.addMarker(1)
-        xterm.addMarker(2)
+
+        setTimeout(() => {
+            this.base = this.getActiveLine().trim() + ' '
+            console.log('[init]', this.base)
+        }, 200)
+        xterm.onLineFeed((data) => {
+            setTimeout(() => {
+                this.base = this.getActiveLine().trim() + ' '
+                console.log('onLineFeed', this.base)
+            }, 100)
+        })
+
         xterm.onKey((data) => {
             const code = data.domEvent.code
             console.log('[onKey]', code)
@@ -104,30 +120,71 @@ export default class XTerm extends Vue {
             }
         })
         xterm.onData((data) => {
-            const active = xterm.buffer.active
-            const line = active.getLine(active.cursorY).translateToString()
-            active.type
-            setTimeout(() => {
-                xterm.refresh(active.cursorY, active.cursorY)
-            }, 1000)
-            console.log(line)
+            console.log(
+                '[onData]',
+                data.split('').map((item) => item.charCodeAt(0))
+            )
             ptyProcess.write(data)
         })
 
-        ptyProcess.on('data', function(data) {
-            const line = data.toString()
-            line.trim().split()
-            console.log('xterm.write(line)', line)
-            xterm.write(line)
-            // xterm.paste('9988')
+        ptyProcess.on('data', (data) => {
+            xterm.write(data.toString())
             setTimeout(() => {
-                const active = xterm.buffer.active
-                const line = active.getLine(active.cursorY).translateToString()
-                if (!this.base) {
-                    this.base = line.trim()
-                    console.log(this.base)
+                const line: string = this.getActiveLine().trim()
+                this.input = line.substr(this.base.length).trim()
+                console.log('[this.input]', this.input)
+            }, 10)
+        })
+
+        setTimeout(async () => {
+            console.log(await this.getInput())
+        }, 5000)
+    }
+
+    protected async getInput() {
+        let line = this.getActiveLine()
+        line = line.trim()
+        await this.clearInput()
+        const empty = this.getActiveLine().trim()
+        const input = line.substring(empty.length)
+        this.setInput(input)
+        return input
+    }
+
+    protected getActiveLine() {
+        const active = this.$xterm.buffer.active
+        const line = active
+            .getLine(active.baseY + active.cursorY)
+            .translateToString()
+        return line
+    }
+
+    protected setInput(text, ln?: boolean) {
+        return new Promise((r) => {
+            this.clearInput().then(() => {
+                this.$pty.write(text)
+                if (ln) {
+                    this.$pty.write('\n')
                 }
+                setTimeout(r, 10)
             })
+        })
+    }
+
+    protected cancelInput() {
+        return new Promise((r) => {
+            this.$pty.write(String.fromCharCode(3))
+            setTimeout(r, 10)
+        })
+    }
+    protected clearInput() {
+        return new Promise((r) => {
+            const active = this.$xterm.buffer.active
+            const line = active.getLine(active.cursorY).translateToString()
+            line.split('').forEach(() => {
+                this.$pty.write(String.fromCharCode(127))
+            })
+            setTimeout(r, 10)
         })
     }
 }
