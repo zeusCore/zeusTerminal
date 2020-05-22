@@ -16,6 +16,7 @@ import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
 import motx from '@/motx'
+import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
 
 const pty = require('node-pty')
@@ -34,6 +35,7 @@ window.addEventListener('resize', () => {
 })
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
+    @State('currentIndex') currentIndex: number = -1
     protected base: string = ''
     protected input: string = ''
     protected arrowIndex: number = 0
