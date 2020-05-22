@@ -7,6 +7,10 @@ import Vue from 'vue'
 
 import App from './App.vue'
 
+import motx from '@/motx'
+
+Vue.use(motx)
+
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
 }

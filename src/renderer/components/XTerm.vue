@@ -36,6 +36,7 @@ window.addEventListener('resize', () => {
 export default class XTerm extends Vue {
     protected base: string = ''
     protected input: string = ''
+    protected arrowIndex: number = 0
     protected recommendFocused: boolean = false
     protected $xterm: Terminal
     protected $pty: any
@@ -91,32 +92,32 @@ export default class XTerm extends Vue {
             }
             xterm.focus()
         })
-        xterm.onBinary(() => {
-            console.log('[onBinary]', arguments)
-        })
 
         setTimeout(() => {
             this.base = this.getActiveLine().trim() + ' '
-            console.log('[init]', this.base)
         }, 200)
         xterm.onLineFeed((data) => {
             setTimeout(() => {
                 this.base = this.getActiveLine().trim() + ' '
-                console.log('onLineFeed', this.base)
+                this.arrowIndex = 0
+                this.input = ''
             }, 100)
         })
 
         xterm.onKey((data) => {
             const code = data.domEvent.code
             console.log('[onKey]', code)
-            if (
-                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
-                    code
-                )
-            ) {
-                xterm.blur()
-                this.recommendFocused = true
-                motx.publish('xterm-onkey', code)
+            if (['ArrowDown', 'ArrowUp'].includes(code)) {
+                if (code === 'ArrowDown') {
+                    this.arrowIndex--
+                } else {
+                    this.arrowIndex++
+                }
+                if (this.arrowIndex === -1) {
+                    xterm.blur()
+                    this.recommendFocused = true
+                    motx.publish('xterm-onkey', code)
+                }
             }
         })
         xterm.onData((data) => {
@@ -128,17 +129,30 @@ export default class XTerm extends Vue {
         })
 
         ptyProcess.on('data', (data) => {
-            xterm.write(data.toString())
-            setTimeout(() => {
-                const line: string = this.getActiveLine().trim()
-                this.input = line.substr(this.base.length).trim()
-                console.log('[this.input]', this.input)
-            }, 10)
+            let line: string = data.toString()
+            if (this.base) {
+                line = line
+                    .split(this.base.trim())
+                    .join(`\x1b[33m${this.base}\x1b[0m`)
+            }
+            xterm.write(line)
+            if (this.base.length) {
+                setTimeout(() => {
+                    const line: string = this.getActiveLine().trim()
+                    this.input = line.substr(this.base.length).trim()
+                    motx.publish('xterm-input', this.input)
+                    console.log('[this.input]', this.input)
+                }, 10)
+            }
         })
 
-        setTimeout(async () => {
-            console.log(await this.getInput())
-        }, 5000)
+        motx.subscribe('xterm-focus-from-tips', (cmd) => {
+            xterm.focus()
+            this.arrowIndex = 0
+            if (cmd) {
+                this.setInput(cmd)
+            }
+        })
     }
 
     protected async getInput() {

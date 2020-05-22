@@ -14,6 +14,7 @@
     "build-only": "node build.js",
     "build:web": "cross-env NODE_ENV=production webpack --config .electron-vue/webpack.web.config.js",
     "pack-all": "npm run pack:main && npm run pack:renderer",
+    "dev-pack-all": "npm run dev-pack:main && npm run dev-pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --colors --config .electron-vue/webpack.renderer.config.js",
     "dev-pack:main": "cross-env NODE_ENV=development webpack --colors --config .electron-vue/webpack.main.config.js",
@@ -25,7 +26,6 @@
   "dependencies": {
     "electron-updater": "^4.1.2",
     "fs-extra": "^8.1.0",
-    "motx": "^3.1.3",
     "node-pty": "^0.9.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
