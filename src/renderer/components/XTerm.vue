@@ -119,6 +119,9 @@ export default class XTerm extends Vue {
                     xterm.blur()
                     this.recommendFocused = true
                     motx.publish('xterm-onkey', code)
+                    setTimeout(() => {
+                        this.setInput('ls')
+                    }, 3000)
                 }
             }
         })
