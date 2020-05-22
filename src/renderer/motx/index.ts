@@ -2,6 +2,12 @@ import MotX from 'motx'
 
 const motx = new MotX({
     name: 'main',
+    store: {
+        recommendList: [],
+        historyList: [],
+        currentIndex: 0,
+        leftSide: true
+    },
     hooks: {
         didPublish(channel: string, args: any[]) {
             console.log('[Motx] didPublish', args)
@@ -11,5 +17,7 @@ const motx = new MotX({
         }
     }
 })
+
+require('./select').default(motx)
 
 export default motx

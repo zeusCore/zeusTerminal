@@ -1,14 +1,23 @@
 <template>
-  <section id="fuck-input-tips"
-           class="fuck-input-tips">
-    <ul>
-      <li>git commit </li>
-      <li>git commit </li>
-      <li>git commit </li>
-      <li>git commit </li>
-      <li>git commit </li>
-    </ul>
-  </section>
+    <section id="fuck-input-tips" class="fuck-input-tips" flex="box:mean">
+        <ul class="recommend-list">
+            <li class="active">git commit</li>
+            <li>
+                git
+                commitcommitcommitcommitcommitcommitcommitcommitcommitcommitcommitcommit
+            </li>
+            <li>git commit</li>
+            <li>git commit</li>
+            <li>git commit</li>
+        </ul>
+        <ul class="history-list">
+            <li>git commit</li>
+            <li>git commit</li>
+            <li>git commit</li>
+            <li>git commit</li>
+            <li>git commit</li>
+        </ul>
+    </section>
 </template>
 
 <script lang="ts">
@@ -23,15 +32,15 @@ export default class App extends Vue {
 
 <style lang="stylus">
 .fuck-input-tips
-  position fixed
-  left 100px
-  top 100px
-  z-index 1000
   background-color rgba(0, 0, 0, 0.7)
-  border solid 1px rgba(255, 255, 255, 0.2)
-  box-shadow 0 0 10px rgba(0, 0, 0, 0.6)
   ul
     li
-      padding 2px 10px
-      color #fff
+      padding 0 10px
+      line-height 20px
+      color #eee
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      &.active
+        background-color rgba(255, 255, 255, 0.2)
 </style>

@@ -1,9 +1,8 @@
 <template>
-  <section class="fuck-xterm-wrapper">
-    <CTips />
-    <section class="fuck-xterm-area"
-             ref="xterm"></section>
-  </section>
+    <section class="fuck-xterm-wrapper">
+        <section class="fuck-xterm-area" ref="xterm"></section>
+        <CTips />
+    </section>
 </template>
 
 <script lang="ts">
@@ -16,12 +15,12 @@ import { SearchAddon } from 'xterm-addon-search'
 import { WebLinksAddon } from 'xterm-addon-web-links'
 import motx from '@/motx'
 import CTips from './Tips.vue'
-
 const fitAddon = new FitAddon()
 
 const pty = require('node-pty')
 
-const shell = process.env[os.platform() === 'win32' ? 'powershell.exe' : 'bash']
+const shell =
+    process.env[os.platform() === 'win32' ? 'powershell.exe' : 'SHELL']
 const env = process.env
 env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
@@ -39,12 +38,12 @@ const ptyProcess = pty.spawn(shell, [], {
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     protected base: string = ''
+    protected recommendFocused: boolean = false
     mounted() {
         this.init()
     }
     init() {
         const xterm = new Terminal({
-            cols: 80,
             rows: 30,
             fontSize: 12,
             lineHeight: 1.2,
@@ -68,8 +67,12 @@ export default class XTerm extends Vue {
         const line = active.getLine(active.cursorY).translateToString()
         console.log('[line]', line)
         fitAddon.fit()
+        window.addEventListener('resize', () => {
+            fitAddon.fit()
+        })
 
-        motx.subscribe('run', (val) => {
+        motx.subscribe('run', (val: string) => {
+            val = val.trimStart()
             if (val[val.length - 1] !== '\n') {
                 ptyProcess.write(val + '\n')
             } else {
@@ -79,35 +82,42 @@ export default class XTerm extends Vue {
         })
 
         // onKey onCursorMove onLineFeed onScroll onSelectionChange onRender onResize onTitleChange
-        xterm.onRender((data) => {
-            console.log('[onRender]', data)
-        })
-        xterm.onSelectionChange((data) => {
-            console.log('[onSelectionChange]', data)
-        })
+
         xterm.onLineFeed((data) => {
-            console.log('[onLineFeed]', data)
+            console.log('[onLineFeed]', arguments)
         })
-        xterm.onCursorMove((data) => {
-            console.log('[onCursorMove]', data)
-        })
+        xterm.addMarker(1)
+        xterm.addMarker(2)
         xterm.onKey((data) => {
-            console.log('[onKey]', data)
+            const code = data.domEvent.code
+            console.log('[onKey]', code)
+            if (
+                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
+                    code
+                )
+            ) {
+                xterm.blur()
+                this.recommendFocused = true
+                motx.publish('xterm-onkey', code)
+            }
         })
         xterm.onData((data) => {
             const active = xterm.buffer.active
             const line = active.getLine(active.cursorY).translateToString()
-            console.log('[onData]', line)
+            active.type
+            setTimeout(() => {
+                xterm.refresh(active.cursorY, active.cursorY)
+            }, 1000)
+            console.log(line)
             ptyProcess.write(data)
         })
 
         ptyProcess.on('data', function(data) {
             const line = data.toString()
-            console.log('[ptyProcess]', line)
             line.trim().split()
-
+            console.log('xterm.write(line)', line)
             xterm.write(line)
-
+            // xterm.paste('9988')
             setTimeout(() => {
                 const active = xterm.buffer.active
                 const line = active.getLine(active.cursorY).translateToString()
@@ -129,5 +139,6 @@ export default class XTerm extends Vue {
   top 0
   bottom 0
   .fuck-xterm-area
-    padding 10px
+    margin 10px
+    height calc(100% - 120px)
 </style>
