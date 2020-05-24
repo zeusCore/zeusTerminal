@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { Terminal } from '../assets/static/xterm/src/browser/public/Terminal'
+import { Terminal } from 'xterm'
 import os from 'os'
 import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
