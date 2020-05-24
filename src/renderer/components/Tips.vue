@@ -1,18 +1,21 @@
 <template>
   <section id="fuck-tips"
            class="fuck-tips"
-           flex="box:mean">
+           flex="box:mean"
+           @click="handleTipsClick">
     <input type="text"
            @keydown="handleKeydown"
            class="fuck-tips-input"
            id="fuck-tips-input">
     <ul class="recommend-list">
       <li :class="{active:index===currentIndex && leftSide}"
+          @click="handleItemClick(item, index, true)"
           v-for="(item , index) in recommendList"
           :key="index">{{item}}</li>
     </ul>
     <ul class="history-list">
       <li :class="{active:index===currentIndex && !leftSide}"
+          @click="handleItemClick(item, index, false)"
           v-for="(item , index) in historyList"
           :key="index">{{item}}</li>
     </ul>
@@ -48,6 +51,14 @@ export default class App extends Vue {
             }
             console.log(`motx.subscribe('xterm-input'`, text)
         })
+    }
+
+    handleItemClick(cmd, index, leftSide) {
+        motx.publish('tips-click', { cmd, index, leftSide })
+    }
+
+    handleTipsClick() {
+        document.getElementById('fuck-tips-input').focus()
     }
 
     handleKeydown(e) {

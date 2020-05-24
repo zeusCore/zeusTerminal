@@ -1,4 +1,4 @@
-export default (cmds: string[], userInput: string) => {
+export default (cmds: string[], userInput: string): string[] => {
   const input: [string, string[], string[]] = [
     userInput,
     userInput.split(" "),
@@ -16,11 +16,11 @@ export default (cmds: string[], userInput: string) => {
     score.push({ score: calcScore(cmds, input), cmd });
   }
   score.sort((a, b) => {
-    if (a.score > b.score) return -1;
-    else if (a.score === b.score) return 0;
-    else return 1;
+    if (a.score > b.score) { return -1; }
+    else if (a.score === b.score) { return 0; }
+    else { return 1; }
   });
-  console.log(score.filter((item) => item.score > 0).slice(0, 10));
+  return score.filter((item) => item.score > 0).slice(0, 5).map((item) => item.cmd)
 };
 
 function calcScore(

@@ -1,6 +1,7 @@
 <template>
 
-  <section class="fuck-xterm-wrapper">
+  <section class="fuck-xterm-wrapper"
+           @click="handleWrapperClick">
     <section class="fuck-xterm-area"
              ref="xterm"></section>
     <CTips />
@@ -9,8 +10,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-import { Terminal } from 'xterm'
+import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Terminal } from '../assets/static/xterm/src/browser/public/Terminal'
 import os from 'os'
 import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
@@ -36,6 +37,8 @@ window.addEventListener('resize', () => {
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('currentIndex') currentIndex: number = -1
+    @State('currentInput') currentInput: string = ''
+
     protected base: string = ''
     protected input: string = ''
     protected arrowIndex: number = 0
@@ -44,12 +47,23 @@ export default class XTerm extends Vue {
     protected $pty: any
     protected $fixAddon: any
     protected $resizeHandler: any
+
+    @Watch('currentInput') currentInputWacher(val) {
+        if (this.input !== val) {
+            this.setInput(val)
+        }
+    }
+
     mounted() {
         this.init()
     }
 
     beforeDestroy() {
         fitAddons.splice(fitAddons.indexOf(this.$fixAddon), 1)
+    }
+
+    handleWrapperClick() {
+        motx.publish('xterm-click')
     }
 
     init() {
@@ -95,14 +109,25 @@ export default class XTerm extends Vue {
             xterm.focus()
         })
 
+        motx.subscribe('xterm-focus-from-tips', () => {
+            if (this.input !== this.currentInput) {
+                this.setInput(this.input)
+                motx.setState('currentInput', this.input)
+                this.arrowIndex = 0
+            }
+        })
+
         setTimeout(() => {
             this.base = this.getActiveLine().trim() + ' '
         }, 200)
-        xterm.onLineFeed((data) => {
+        xterm.onLineFeed(() => {
             setTimeout(() => {
-                this.base = this.getActiveLine().trim() + ' '
+                const line = this.getActiveLine().trim()
+                const prev = line.split(/[\$\%\>]/)[0]
+                this.base = prev + line.substr(prev.length, 1) + ' '
                 this.arrowIndex = 0
                 this.input = ''
+                console.log({ line, prev, base: this.base })
             }, 100)
         })
 
@@ -111,7 +136,9 @@ export default class XTerm extends Vue {
             console.log('[onKey]', code)
             if (['ArrowDown', 'ArrowUp'].includes(code)) {
                 if (code === 'ArrowDown') {
-                    this.arrowIndex--
+                    if (this.arrowIndex > -1) {
+                        this.arrowIndex--
+                    }
                 } else {
                     this.arrowIndex++
                 }
@@ -119,15 +146,16 @@ export default class XTerm extends Vue {
                     xterm.blur()
                     this.recommendFocused = true
                     motx.publish('xterm-onkey', code)
-                    setTimeout(() => {
-                        this.setInput('ls')
-                    }, 3000)
+                    // setTimeout(() => {
+                    //     this.setInput('ls')
+                    // }, 3000)
                 }
             }
         })
         xterm.onData((data) => {
             console.log(
                 '[onData]',
+                data,
                 data.split('').map((item) => item.charCodeAt(0))
             )
             ptyProcess.write(data)
@@ -141,12 +169,15 @@ export default class XTerm extends Vue {
                     .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
             }
             xterm.write(line)
-            if (this.base.length) {
+            if (this.base.length && this.arrowIndex > -1) {
                 setTimeout(() => {
                     const line: string = this.getActiveLine().trim()
-                    this.input = line.substr(this.base.length).trim()
-                    motx.publish('xterm-input', this.input)
-                    console.log('[this.input]', this.input)
+                    const input = line.substr(this.base.length).trim()
+                    if (this.input !== input) {
+                        this.input = input
+                        motx.publish('xterm-input', this.input)
+                        console.log('[this.input]', this.input)
+                    }
                 }, 10)
             }
         })
@@ -199,7 +230,8 @@ export default class XTerm extends Vue {
     protected clearInput() {
         return new Promise((r) => {
             const active = this.$xterm.buffer.active
-            const line = active.getLine(active.cursorY).translateToString()
+            let line = active.getLine(active.cursorY).translateToString()
+            line = line.substr(this.base.length - 1)
             line.split('').forEach(() => {
                 this.$pty.write(String.fromCharCode(127))
             })
