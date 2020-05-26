@@ -30,8 +30,8 @@ env['LC_CTYPE'] = 'zh_CN.UTF-8'
 const fitAddons = []
 
 window.addEventListener('resize', () => {
-    fitAddons.forEach((item) => {
-        item && item.fit()
+    fitAddons.forEach((fix) => {
+        fix && fix()
     })
 })
 @Component({ components: { CTips } })
@@ -41,12 +41,19 @@ export default class XTerm extends Vue {
 
     protected base: string = ''
     protected input: string = ''
-    protected arrowIndex: number = 0
-    protected recommendFocused: boolean = false
+
     protected $xterm: Terminal
     protected $pty: any
     protected $fixAddon: any
     protected $resizeHandler: any
+
+    protected preKeydown: string = ''
+    protected arrowIndex: number = 0
+
+    // check no content
+    protected bsMode: boolean = false
+    protected toSetInput: string = ''
+    protected checkInput: any
 
     @Watch('currentInput') currentInputWacher(val) {
         if (this.input !== val) {
@@ -76,9 +83,6 @@ export default class XTerm extends Vue {
             encoding: null
         }))
 
-        const fitAddon = (this.$fixAddon = new FitAddon())
-        fitAddons.push(fitAddon)
-
         const xterm = (this.$xterm = new Terminal({
             rows: 30,
             fontSize: 12,
@@ -92,12 +96,23 @@ export default class XTerm extends Vue {
             }
         }))
 
+        const fitAddon = (this.$fixAddon = new FitAddon())
+
+        fitAddons.push(() => {
+            console.log(xterm.cols)
+            fitAddon.fit()
+            console.log(xterm, xterm.cols)
+            ptyProcess.resize(xterm.cols, xterm.rows)
+        })
+
         xterm.loadAddon(fitAddon)
         xterm.loadAddon(new WebLinksAddon())
-
         xterm.open(this.$refs.xterm as HTMLElement)
 
-        fitAddon.fit()
+        setTimeout(() => {
+            fitAddon.fit()
+            ptyProcess.resize(xterm.cols, xterm.rows)
+        }, 50)
 
         motx.subscribe('run', (val: string) => {
             val = val.trimStart()
@@ -109,48 +124,18 @@ export default class XTerm extends Vue {
             xterm.focus()
         })
 
-        motx.subscribe('xterm-focus-from-tips', () => {
-            if (this.input !== this.currentInput) {
-                this.setInput(this.input)
-                motx.setState('currentInput', this.input)
-                this.arrowIndex = 0
-            }
-        })
-
-        setTimeout(() => {
-            this.base = this.getActiveLine().trim() + ' '
-        }, 200)
-        xterm.onLineFeed(() => {
-            setTimeout(() => {
-                const line = this.getActiveLine().trim()
-                const prev = line.split(/[\$\%\>]/)[0]
-                this.base = prev + line.substr(prev.length, 1) + ' '
-                this.arrowIndex = 0
-                this.input = ''
-                console.log({ line, prev, base: this.base })
-            }, 100)
-        })
+        // setTimeout(() => {
+        //     this.base = this.getLastLine().trim() + ' '
+        // }, 200)
 
         xterm.onKey((data) => {
             const code = data.domEvent.code
             console.log('[onKey]', code)
-            if (['ArrowDown', 'ArrowUp'].includes(code)) {
-                if (code === 'ArrowDown') {
-                    if (this.arrowIndex > -1) {
-                        this.arrowIndex--
-                    }
-                } else {
-                    this.arrowIndex++
-                }
-                if (this.arrowIndex === -1) {
-                    xterm.blur()
-                    this.recommendFocused = true
-                    motx.publish('xterm-onkey', code)
-                    // setTimeout(() => {
-                    //     this.setInput('ls')
-                    // }, 3000)
-                }
-            }
+            this.preKeydown = code
+            // motx.publish('xterm-keydown', {
+            //     code,
+            //     keyCode: data.domEvent.keyCode
+            // })
         })
         xterm.onData((data) => {
             console.log(
@@ -158,31 +143,76 @@ export default class XTerm extends Vue {
                 data,
                 data.split('').map((item) => item.charCodeAt(0))
             )
+            if (
+                this.currentIndex > -1 &&
+                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
+                    this.preKeydown
+                )
+            ) {
+                return
+            }
             ptyProcess.write(data)
         })
 
-        ptyProcess.on('data', (data) => {
-            let line: string = data.toString()
-            if (this.base) {
-                line = line
-                    .split(this.base.trim())
-                    .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
-            }
-            xterm.write(line)
-            if (this.base.length && this.arrowIndex > -1) {
-                setTimeout(() => {
-                    const line: string = this.getActiveLine().trim()
-                    const input = line.substr(this.base.length).trim()
-                    if (this.input !== input) {
-                        this.input = input
-                        motx.publish('xterm-input', this.input)
-                        console.log('[this.input]', this.input)
-                    }
-                }, 10)
+        xterm.onLineFeed(() => {
+            const active = this.$xterm.buffer.active
+            const newLine = active.getLine(active.baseY + active.cursorY)
+            if (newLine && !newLine.isWrapped) {
+                var inputdata = this.getLineData(
+                    active,
+                    active.baseY + active.cursorY - 1
+                )
+                // parseCmd(inputdata);
+                console.log(inputdata)
+            } else {
             }
         })
 
-        motx.subscribe('xterm-focus-from-tips', (cmd) => {
+        ptyProcess.on('data', (data) => {
+            if (this.preKeydown === 'ArrowDown' && data[0] === 7) {
+                motx.setState('currentIndex', 0)
+                motx.setState('leftSide', true)
+                xterm.write(data)
+            } else {
+                let line: string = data.toString()
+                console.log(
+                    line.length,
+                    line.split('').map((item) => item.charCodeAt(0))
+                )
+                if (this.base) {
+                    line = line
+                        .split(this.base.trim())
+                        .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
+                }
+                xterm.write(line)
+            }
+        })
+
+        ptyProcess.on('data', (data: number[]) => {
+            if (this.bsMode) {
+                if (data[0] === 7) {
+                    this.$pty.write(this.toSetInput)
+                    if (this.checkInput) {
+                        this.checkInput(true)
+                    }
+                } else {
+                    if (this.checkInput) {
+                        this.checkInput(false)
+                    }
+                }
+            }
+        })
+
+        // 还原原来的输入内容
+        motx.subscribe('tips-blur', () => {
+            if (this.input !== this.currentInput) {
+                this.setInput(this.input)
+                motx.setState('currentInput', this.input)
+                this.arrowIndex = 0
+            }
+        })
+
+        motx.subscribe('tips-blur', (cmd) => {
             xterm.focus()
             this.arrowIndex = 0
             if (cmd) {
@@ -191,34 +221,27 @@ export default class XTerm extends Vue {
         })
     }
 
-    protected async getInput() {
-        let line = this.getActiveLine()
-        line = line.trim()
-        await this.clearInput()
-        const empty = this.getActiveLine().trim()
-        const input = line.substring(empty.length)
-        this.setInput(input)
-        return input
-    }
-
-    protected getActiveLine() {
+    protected getLastLine() {
         const active = this.$xterm.buffer.active
-        const line = active
-            .getLine(active.baseY + active.cursorY)
-            .translateToString()
-        return line
+        const line = active.getLine(active.baseY + active.cursorY)
+        return line.translateToString()
     }
 
     protected setInput(text, ln?: boolean) {
-        return new Promise((r) => {
-            this.clearInput().then(() => {
-                this.$pty.write(text)
-                if (ln) {
-                    this.$pty.write('\n')
-                }
-                setTimeout(r, 10)
-            })
-        })
+        this.toSetInput = text
+        this.clearInput()
+    }
+
+    protected getBSLenght(buffer) {
+        let len = 0
+        for (let i = 0; i < buffer.length; i++) {
+            if (buffer[i] !== 8) {
+                break
+            } else {
+                len++
+            }
+        }
+        return len
     }
 
     protected cancelInput() {
@@ -228,15 +251,33 @@ export default class XTerm extends Vue {
         })
     }
     protected clearInput() {
-        return new Promise((r) => {
-            const active = this.$xterm.buffer.active
-            let line = active.getLine(active.cursorY).translateToString()
-            line = line.substr(this.base.length - 1)
-            line.split('').forEach(() => {
-                this.$pty.write(String.fromCharCode(127))
-            })
-            setTimeout(r, 10)
-        })
+        this.bsMode = true
+
+        this.$pty.write(String.fromCharCode(127))
+
+        this.checkInput = (done) => {
+            if (done) {
+                this.bsMode = false
+                this.checkInput = null
+            } else {
+                this.clearInput()
+            }
+        }
+    }
+    protected getLineData(buffer, lineIndex) {
+        let line = buffer.getLine(lineIndex)
+        if (!line) {
+            return
+        }
+        let lineData = line.translateToString(true)
+        while (lineIndex > 0 && line.isWrapped) {
+            line = buffer.getLine(--lineIndex)
+            if (!line) {
+                break
+            }
+            lineData = line.translateToString(false) + lineData
+        }
+        return lineData
     }
 }
 </script>
