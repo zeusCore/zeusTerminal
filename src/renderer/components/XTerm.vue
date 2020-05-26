@@ -41,6 +41,7 @@ export default class XTerm extends Vue {
 
     protected base: string = ''
     protected input: string = ''
+    protected inputLine: string = ''
 
     protected $xterm: Terminal
     protected $pty: any
@@ -48,7 +49,6 @@ export default class XTerm extends Vue {
     protected $resizeHandler: any
 
     protected preKeydown: string = ''
-    protected arrowIndex: number = 0
 
     // check no content
     protected bsMode: boolean = false
@@ -124,37 +124,47 @@ export default class XTerm extends Vue {
             xterm.focus()
         })
 
-        // setTimeout(() => {
-        //     this.base = this.getLastLine().trim() + ' '
-        // }, 200)
-
         xterm.onKey((data) => {
             const code = data.domEvent.code
             console.log('[onKey]', code)
             this.preKeydown = code
-            // motx.publish('xterm-keydown', {
-            //     code,
-            //     keyCode: data.domEvent.keyCode
-            // })
+            motx.publish('xterm-keydown', {
+                code,
+                keyCode: data.domEvent.keyCode
+            })
+            const key = data.key !== ' ' ? (data.key || '').trim() : ' '
+            if (key) {
+                this.input += key
+                if (key !== ' ') {
+                    motx.publish('xterm-input', this.input)
+                }
+            }
         })
+
         xterm.onData((data) => {
             console.log(
                 '[onData]',
                 data,
                 data.split('').map((item) => item.charCodeAt(0))
             )
+
             if (
-                this.currentIndex > -1 &&
                 ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
                     this.preKeydown
                 )
             ) {
-                return
+                if (this.preKeydown === 'ArrowUp' && this.currentIndex === 0) {
+                }
+                if (this.currentIndex > -1) {
+                    return
+                }
             }
             ptyProcess.write(data)
         })
 
         xterm.onLineFeed(() => {
+            this.input = ''
+
             const active = this.$xterm.buffer.active
             const newLine = active.getLine(active.baseY + active.cursorY)
             if (newLine && !newLine.isWrapped) {
@@ -162,23 +172,22 @@ export default class XTerm extends Vue {
                     active,
                     active.baseY + active.cursorY - 1
                 )
-                // parseCmd(inputdata);
-                console.log(inputdata)
-            } else {
+                this.inputLine = inputdata
+            } else if (newLine) {
+                this.inputLine = newLine.translateToString()
             }
         })
 
         ptyProcess.on('data', (data) => {
+            console.log('[pty]', data.toString(), data)
             if (this.preKeydown === 'ArrowDown' && data[0] === 7) {
-                motx.setState('currentIndex', 0)
-                motx.setState('leftSide', true)
-                xterm.write(data)
+                if (this.currentIndex === -1) {
+                    motx.setState('currentIndex', 0)
+                    motx.setState('leftSide', true)
+                    xterm.write(data)
+                }
             } else {
                 let line: string = data.toString()
-                console.log(
-                    line.length,
-                    line.split('').map((item) => item.charCodeAt(0))
-                )
                 if (this.base) {
                     line = line
                         .split(this.base.trim())
@@ -191,7 +200,10 @@ export default class XTerm extends Vue {
         ptyProcess.on('data', (data: number[]) => {
             if (this.bsMode) {
                 if (data[0] === 7) {
-                    this.$pty.write(this.toSetInput)
+                    if (this.toSetInput) {
+                        this.$pty.write(this.toSetInput)
+                        this.toSetInput = ''
+                    }
                     if (this.checkInput) {
                         this.checkInput(true)
                     }
@@ -208,13 +220,11 @@ export default class XTerm extends Vue {
             if (this.input !== this.currentInput) {
                 this.setInput(this.input)
                 motx.setState('currentInput', this.input)
-                this.arrowIndex = 0
             }
         })
 
         motx.subscribe('tips-blur', (cmd) => {
             xterm.focus()
-            this.arrowIndex = 0
             if (cmd) {
                 this.setInput(cmd)
             }
@@ -230,18 +240,6 @@ export default class XTerm extends Vue {
     protected setInput(text, ln?: boolean) {
         this.toSetInput = text
         this.clearInput()
-    }
-
-    protected getBSLenght(buffer) {
-        let len = 0
-        for (let i = 0; i < buffer.length; i++) {
-            if (buffer[i] !== 8) {
-                break
-            } else {
-                len++
-            }
-        }
-        return len
     }
 
     protected cancelInput() {

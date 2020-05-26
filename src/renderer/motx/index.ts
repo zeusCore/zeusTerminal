@@ -23,10 +23,10 @@ const motx = new MotX({
     },
     hooks: {
         didPublish(channel: string, args: any[]) {
-            console.log('[Motx] didPublish', args)
+            // console.log('[Motx] didPublish', args)
         },
         didSetState(fieldName: string, newState, isolate: boolean, store) {
-            console.log('[Motx] didSetState', fieldName, newState)
+            // console.log('[Motx] didSetState', fieldName, newState)
         }
     }
 })
