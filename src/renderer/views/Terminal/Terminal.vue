@@ -7,7 +7,7 @@
            flex="dir:top box:first">
     <section class="xterm-header"
              flex="">
-      <div class="left"></div>
+      <div class="left">{{term.title}}</div>
       <div class="right"></div>
     </section>
     <section class="xterm-area"
@@ -105,7 +105,6 @@ export default class XTerm extends Vue {
             rendererType: 'dom',
             theme: {
                 foreground: '#ccc',
-                background: '#222',
                 cursor: 'rgb(254,239,143)'
             }
         }))
@@ -188,15 +187,24 @@ export default class XTerm extends Vue {
 .term-wrapper
   width 100%
   height 100%
-  border solid 1px rgba(0, 0, 0, 0)
+  border 1px rgba(255, 255, 255, 0.1) solid
+  background-color rgba(0, 0, 0, 0.8)
   &.focus
-    border 1px rgba(255, 255, 255, 0.7) solid
+    border 1px rgba(255, 255, 255, 0.2) solid
+    .xterm-header
+      .left
+        color #ccc
   .xterm-header
     width 100%
     height 20px
-    background-color rgba(0, 0, 0, 0.8)
+    line-height 20px
+    padding 0 10px
     .left
       height 20px
+      color #666
   .xterm-area
     height 100%
+    padding 5px
+    .xterm-viewport
+      background-color transparent !important
 </style>
