@@ -10,8 +10,13 @@
            v-if="toolsShow"
            @click="toRun"><i class="icon icon-run"></i></div>
     </nav>
+
     <section class="editor-wrapper"
-             @mouseup="handleMouseUp">
+             @mouseup="handleMouseUp"
+             flex="box:first">
+      <div class="editor-handler">
+
+      </div>
       <textarea id="code"></textarea>
     </section>
   </section>
@@ -95,7 +100,7 @@ export default class MDEditor extends Vue {
             {
                 mode: 'shell',
                 height: '100%',
-                lineNumbers: true,
+                lineNumbers: false,
                 matchBrackets: true,
                 theme: 'base16-dark',
                 extraKeys: {
@@ -149,6 +154,10 @@ export default class MDEditor extends Vue {
         opacity 1
   .editor-wrapper
     height 100%
+    .editor-handler
+      width 10px
+      height 100%
+      background-color #151515
   .CodeMirror
     height 100%
     pre

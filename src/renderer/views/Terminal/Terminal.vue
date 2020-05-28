@@ -188,20 +188,22 @@ export default class XTerm extends Vue {
   width 100%
   height 100%
   border 1px rgba(255, 255, 255, 0.1) solid
-  background-color rgba(0, 0, 0, 0.8)
+  background-color rgba(0, 0, 0, 0.7)
+  opacity 0.8
+  transition opacity 0.2s
   &.focus
-    border 1px rgba(255, 255, 255, 0.2) solid
+    opacity 1
     .xterm-header
-      background-color rgba(255, 255, 255, 0.1)
       .left
-        color #ccc
+        color #fff
   .xterm-header
     width 100%
-    line-height 24px
+    line-height 20px
     padding 0 10px
+    font-size 13px
     .left
-      height 24px
-      color #666
+      height 20px
+      color #ccc
   .xterm-area
     height 100%
     padding 5px
