@@ -4,7 +4,6 @@
            @click="handleWrapperClick">
     <section class="fuck-xterm-area"
              ref="xterm"></section>
-    <CTips />
   </section>
 
 </template>
@@ -19,8 +18,7 @@ import { WebLinksAddon } from 'xterm-addon-web-links'
 import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
-
-const pty = require('node-pty')
+import { spawn } from 'node-pty'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
 const env = process.env
@@ -34,6 +32,7 @@ window.addEventListener('resize', () => {
         fix && fix()
     })
 })
+
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('currentIndex') currentIndex: number = -1
@@ -74,7 +73,7 @@ export default class XTerm extends Vue {
     }
 
     init() {
-        const ptyProcess = (this.$pty = pty.spawn(shell, [], {
+        const ptyProcess = (this.$pty = spawn(shell, ['--login'], {
             name: 'xterm-color',
             cols: 80,
             rows: 30,
@@ -124,22 +123,22 @@ export default class XTerm extends Vue {
             xterm.focus()
         })
 
-        xterm.onKey((data) => {
-            const code = data.domEvent.code
-            console.log('[onKey]', code)
-            this.preKeydown = code
-            motx.publish('xterm-keydown', {
-                code,
-                keyCode: data.domEvent.keyCode
-            })
-            const key = data.key !== ' ' ? (data.key || '').trim() : ' '
-            if (key) {
-                this.input += key
-                if (key !== ' ') {
-                    motx.publish('xterm-input', this.input)
-                }
-            }
-        })
+        // xterm.onKey((data) => {
+        //     const code = data.domEvent.code
+        //     console.log('[onKey]', code)
+        //     this.preKeydown = code
+        //     motx.publish('xterm-keydown', {
+        //         code,
+        //         keyCode: data.domEvent.keyCode
+        //     })
+        //     const key = data.key !== ' ' ? (data.key || '').trim() : ' '
+        //     if (key) {
+        //         this.input += key
+        //         if (key !== ' ') {
+        //             motx.publish('xterm-input', this.input)
+        //         }
+        //     }
+        // })
 
         xterm.onData((data) => {
             console.log(
@@ -148,87 +147,87 @@ export default class XTerm extends Vue {
                 data.split('').map((item) => item.charCodeAt(0))
             )
 
-            if (
-                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
-                    this.preKeydown
-                )
-            ) {
-                if (this.preKeydown === 'ArrowUp' && this.currentIndex === 0) {
-                }
-                if (this.currentIndex > -1) {
-                    return
-                }
-            }
+            // if (
+            //     ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
+            //         this.preKeydown
+            //     )
+            // ) {
+            //     if (this.preKeydown === 'ArrowUp' && this.currentIndex === 0) {
+            //     }
+            //     if (this.currentIndex > -1) {
+            //         return
+            //     }
+            // }
             ptyProcess.write(data)
         })
 
-        xterm.onLineFeed(() => {
-            this.input = ''
+        // xterm.onLineFeed(() => {
+        //     this.input = ''
 
-            const active = this.$xterm.buffer.active
-            const newLine = active.getLine(active.baseY + active.cursorY)
-            if (newLine && !newLine.isWrapped) {
-                var inputdata = this.getLineData(
-                    active,
-                    active.baseY + active.cursorY - 1
-                )
-                this.inputLine = inputdata
-            } else if (newLine) {
-                this.inputLine = newLine.translateToString()
-            }
+        //     const active = this.$xterm.buffer.active
+        //     const newLine = active.getLine(active.baseY + active.cursorY)
+        //     if (newLine && !newLine.isWrapped) {
+        //         var inputdata = this.getLineData(
+        //             active,
+        //             active.baseY + active.cursorY - 1
+        //         )
+        //         this.inputLine = inputdata
+        //     } else if (newLine) {
+        //         this.inputLine = newLine.translateToString()
+        //     }
+        // })
+
+        ptyProcess.on('data', (data: any) => {
+            // console.log('[pty]', data.toString(), data)
+            // if (this.preKeydown === 'ArrowDown' && data[0] === 7) {
+            //     if (this.currentIndex === -1) {
+            //         motx.setState('currentIndex', 0)
+            //         motx.setState('leftSide', true)
+            //         xterm.write(data)
+            //     }
+            // } else {
+            let line: string = data.toString()
+            //     if (this.base) {
+            //         line = line
+            //             .split(this.base.trim())
+            //             .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
+            //     }
+            xterm.write(line)
+            // }
         })
 
-        ptyProcess.on('data', (data) => {
-            console.log('[pty]', data.toString(), data)
-            if (this.preKeydown === 'ArrowDown' && data[0] === 7) {
-                if (this.currentIndex === -1) {
-                    motx.setState('currentIndex', 0)
-                    motx.setState('leftSide', true)
-                    xterm.write(data)
-                }
-            } else {
-                let line: string = data.toString()
-                if (this.base) {
-                    line = line
-                        .split(this.base.trim())
-                        .join(`\x1b[33m${this.base.trim()}\x1b[0m`)
-                }
-                xterm.write(line)
-            }
-        })
-
-        ptyProcess.on('data', (data: number[]) => {
-            if (this.bsMode) {
-                if (data[0] === 7) {
-                    if (this.toSetInput) {
-                        this.$pty.write(this.toSetInput)
-                        this.toSetInput = ''
-                    }
-                    if (this.checkInput) {
-                        this.checkInput(true)
-                    }
-                } else {
-                    if (this.checkInput) {
-                        this.checkInput(false)
-                    }
-                }
-            }
-        })
+        // ptyProcess.on('data', (data: any) => {
+        //     if (this.bsMode) {
+        //         if (data[0] === 7) {
+        //             if (this.toSetInput) {
+        //                 this.$pty.write(this.toSetInput)
+        //                 this.toSetInput = ''
+        //             }
+        //             if (this.checkInput) {
+        //                 this.checkInput(true)
+        //             }
+        //         } else {
+        //             if (this.checkInput) {
+        //                 this.checkInput(false)
+        //             }
+        //         }
+        //     }
+        // })
 
         // 还原原来的输入内容
-        motx.subscribe('tips-blur', () => {
-            if (this.input !== this.currentInput) {
-                this.setInput(this.input)
-                motx.setState('currentInput', this.input)
-            }
-        })
+        // motx.subscribe('tips-blur', () => {
+        //     if (this.input !== this.currentInput) {
+        //         this.setInput(this.input)
+        //         motx.setState('currentInput', this.input)
+        //     }
+        // })
 
-        motx.subscribe('tips-blur', (cmd) => {
-            xterm.focus()
-            if (cmd) {
-                this.setInput(cmd)
-            }
-        })
+        // motx.subscribe('tips-blur', (cmd) => {
+        //     xterm.focus()
+        //     if (cmd) {
+        //         this.setInput(cmd)
+        //     }
+        // })
     }
 
     protected getLastLine() {
@@ -286,8 +285,8 @@ export default class XTerm extends Vue {
   position fixed
   left 0
   top 0
+  padding 10px
   bottom 0
   .fuck-xterm-area
-    margin 10px
-    height calc(100% - 120px)
+    height 100%
 </style>
