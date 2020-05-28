@@ -1,25 +1,15 @@
 import MotX from 'motx/dist/motx-vue'
 
+let terminalUid = 0
 const motx = new MotX({
     name: 'main',
+    isolate: false,
     store: {
-        recommendList: [
-            'git add .',
-            'ls',
-            'cd ..',
-            "git commit -m ''",
-            'git push'
+        terminals: [
+            { id: terminalUid++, title: 'HomeApp', pwd: '' },
+            { id: terminalUid++, title: 'Terminal', pwd: '' }
         ],
-        historyList: [
-            '3333333',
-            'sdfsdf',
-            '33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333',
-            'sdfsdf',
-            'sdfsdf'
-        ],
-        currentIndex: -1, // -1: 没有激活选项
-        currentInput: '',
-        leftSide: true
+        focused: [1]
     },
     hooks: {
         didPublish(channel: string, args: any[]) {

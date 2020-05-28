@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="icon" horiz-adv-x="1024" >
+  <font-face
+    font-family="icon"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="run" unicode="&#59226;" d="M981.184 735.904C837.568 756.544 678.848 768 512 768S186.432 756.544 42.816 735.904C15.296 628.192 0 509.152 0 384s15.264-244.16 42.816-351.904C186.464 11.456000000000017 345.152 0 512 0s325.568 11.456 469.184 32.096C1008.704 139.808 1024 258.84799999999996 1024 384s-15.264 244.16-42.816 351.904zM384 192V576l320-192-320-192z"  horiz-adv-x="1024" />
+
+    
+
+
+  </font>
+</defs></svg>
