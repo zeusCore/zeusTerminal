@@ -3,6 +3,7 @@ if (process.env.NODE_ENV === 'production') {
     fixPath()
 }
 
+
 import Vue from 'vue'
 
 import App from './App.vue'

@@ -1,13 +1,14 @@
 <template>
-  <section class="term-header"
-           flex>
-    <div class="logo">FuckTerminal</div>
+  <section class="term-header">
+    <Topbar></Topbar>
+
   </section>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-@Component({ components: {} })
+import Topbar from './components/Topbar.vue'
+@Component({ components: { Topbar } })
 export default class Body extends Vue {
     mounted() {}
 }

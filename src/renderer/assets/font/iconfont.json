@@ -6,6 +6,27 @@
   "description": "terminal",
   "glyphs": [
     {
+      "icon_id": "10793034",
+      "name": "add",
+      "font_class": "add",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "12609225",
+      "name": "remove",
+      "font_class": "remove",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "1332104",
+      "name": "386-terminal",
+      "font_class": "term",
+      "unicode": "e6c4",
+      "unicode_decimal": 59076
+    },
+    {
       "icon_id": "703373",
       "name": "play",
       "font_class": "play",

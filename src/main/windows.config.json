@@ -1,0 +1,43 @@
+{
+    "index": {
+        "height": 563,
+        "useContentSize": true,
+        "transparent": true,
+        "width": 1024,
+        "frame": false,
+        "minHeight": 563,
+        "minWidth": 1024,
+        "webPreferences": {
+            "nodeIntegration": true,
+            "contextIsolation": false
+        }
+    },
+    "QRCodeLogin": {
+        "frame": false,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "width": 820,
+        "height": 540,
+        "webPreferences": {
+            "nodeIntegration": true,
+            "webviewTag": true,
+            "contextIsolation": false,
+            "webgl": true
+        },
+        "useContentSize": true
+    },
+    "setting": {
+        "frame": false,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "width": 440,
+        "height": 321,
+        "webPreferences": {
+            "nodeIntegration": true,
+            "contextIsolation": false
+        },
+        "useContentSize": true
+    }
+}

@@ -13,14 +13,27 @@
         "allowSyntheticDefaultImports": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["node"],
-        "typeRoots": ["node_modules/@types", "typings"],
+        "types": [
+            "node"
+        ],
+        "typeRoots": [
+            "node_modules/@types",
+            "typings"
+        ],
         "paths": {
-            "@/*": ["src/renderer/*"],
-            "#/*": ["src/main/*"],
-            "$/*": ["src/server/*"]
+            "@/*": [
+                "src/renderer/*"
+            ],
+            "#/*": [
+                "src/main/*"
+            ],
         },
-        "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ]
     },
     "include": [
         "typings/**/*.ts",
@@ -29,5 +42,7 @@
         "src/**/*.json",
         "src/**/*.vue"
     ],
-    "exclude": ["node_modules"]
+    "exclude": [
+        "node_modules"
+    ]
 }
