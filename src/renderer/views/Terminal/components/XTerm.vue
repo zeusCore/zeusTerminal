@@ -183,6 +183,11 @@ export default class XTerm extends Vue {
 </script>
 
 <style lang="stylus">
+.terminal-wrapper
+  &.focus
+    .xterm-wrapper
+      .xterm-header
+        opacity 1
 .xterm-wrapper
   width 100%
   height 100%
@@ -191,6 +196,7 @@ export default class XTerm extends Vue {
     line-height 20px
     padding 0
     font-size 13px
+    opacity 0.5
     .left
       height 20px
       color #ccc
