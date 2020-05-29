@@ -25,6 +25,7 @@ export default class App extends Vue {
 <style lang="stylus">
 html, body, .fuck-term-app, #app
   height 100%
+  background-color transparent
 .fuck-term-app
-  background-color rgba(0, 0, 0, 0.8)
+  background-color rgba(0, 0, 0, 0.6)
 </style>

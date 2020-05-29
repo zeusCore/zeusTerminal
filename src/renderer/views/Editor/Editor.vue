@@ -10,8 +10,13 @@
            v-if="toolsShow"
            @click="toRun"><i class="icon icon-run"></i></div>
     </nav>
+
     <section class="editor-wrapper"
-             @mouseup="handleMouseUp">
+             @mouseup="handleMouseUp"
+             flex="box:first">
+      <div class="editor-handler">
+
+      </div>
       <textarea id="code"></textarea>
     </section>
   </section>
@@ -62,20 +67,25 @@ export default class MDEditor extends Vue {
     }
 
     protected handleMouseUp(e) {
-        if (this.timo) {
-            clearTimeout(this.timo)
-        }
-        if (this.selected) {
-            this.toolsShow = true
-            this.toolsDisabled = false
-            this.toolsLeft = e.pageX + 20
-            this.toolsTop = e.pageY - 50
-            this.timo = setTimeout(() => {
+        setTimeout(() => {
+            if (this.timo) {
+                clearTimeout(this.timo)
+            }
+            if (this.selected) {
+                this.toolsShow = true
+                this.toolsDisabled = false
+                this.toolsLeft = e.pageX + 20
+                this.toolsTop = e.pageY - 50
+                this.timo = setTimeout(() => {
+                    this.toolsShow = false
+                    this.toolsDisabled = true
+                    this.timo = null
+                }, 2000)
+            } else {
                 this.toolsShow = false
                 this.toolsDisabled = true
-                this.timo = null
-            }, 2000)
-        }
+            }
+        }, 50)
     }
 
     protected handleToolsFixed() {
@@ -97,7 +107,7 @@ export default class MDEditor extends Vue {
             {
                 mode: 'shell',
                 height: '100%',
-                lineNumbers: true,
+                lineNumbers: false,
                 matchBrackets: true,
                 theme: 'base16-dark',
                 extraKeys: {
@@ -107,13 +117,15 @@ export default class MDEditor extends Vue {
         )
 
         this.$editor.on('beforeSelectionChange', (e) => {
-            this.selected = this.$editor.getSelection()
-            if (!this.selected) {
-                const pos = this.$editor.getCursor()
-                const line = this.$editor.getLine(pos.line)
-                this.selected = line.trim()
-            }
-            console.log(this.selected)
+            setTimeout(() => {
+                this.selected = this.cleanLine(this.$editor.getSelection())
+                if (!this.selected) {
+                    const pos = this.$editor.getCursor()
+                    const line = this.$editor.getLine(pos.line)
+                    this.selected = this.cleanLine(line)
+                }
+                console.log(this.selected)
+            }, 30)
         })
 
         this.$editor.on('change', (e) => {
@@ -122,6 +134,27 @@ export default class MDEditor extends Vue {
                 window.localStorage.cmds = art || ''
             }
         })
+    }
+
+    protected cleanLine(cmd: string) {
+        console.log(cmd.split(/[\n\r]/g))
+        const cmds = cmd
+            .split(/[\n\r]/g)
+            .filter((cmd) => !!cmd.trim())
+            .map((cmd) => {
+                if (cmd.includes('#')) {
+                    return cmd.substr(0, cmd.indexOf('#')).trim()
+                } else {
+                    return cmd.trim()
+                }
+            })
+            .filter((cmd) => !!cmd)
+            .join('\n')
+
+        if (!/[a-z]/gi.test(cmds)) {
+            return ''
+        }
+        return cmds
     }
 }
 </script>
@@ -149,16 +182,12 @@ export default class MDEditor extends Vue {
         opacity 1
   .editor-wrapper
     height 100%
+    .editor-handler
+      width 10px
+      height 100%
+      background-color #151515
   .CodeMirror
+    color #ddd
     height 100%
-    pre
-      &.book-link
-        .cm-link, .cm-url
-          cursor pointer
-        &:hover
-          .cm-link, .cm-url
-            color #e08527
-      &.no-link
-        .cm-link, .cm-url
-          text-decoration none
+    font-family Menlo, Monaco, 'Courier New', monospace
 </style>

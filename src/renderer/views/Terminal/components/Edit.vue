@@ -1,0 +1,129 @@
+<template>
+  <section class="terminal-edit"
+           flex="dir:top box:first">
+    <section class="te-header"
+             flex="box:last">
+      <input type="text"
+             v-model="input"
+             class="te-title-input">
+      <div class="te-cmds-tips"><span>{{cmdsTips}}</span></div>
+      <div class="te-submit"
+           @click="submit">Save</div>
+    </section>
+    <section class="te-editor-wrapper">
+      <textarea ref="textarea"
+                placeholder="
+
+Enter the command that executed by default or manually.
+Waiting for some seconds before executing the following command is supported.
+Wait-[seconds] 
+Wait-1: wait 1 seconds, Wait-10: wait 10 seconds"></textarea>
+    </section>
+  </section>
+</template>
+å
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import motx from '@/motx'
+
+declare const CodeMirror: any
+
+@Component({ components: {} })
+export default class TerminalEditor extends Vue {
+    @Prop({
+        default: () => ({})
+    })
+    protected term: PlainObject
+    protected input: string = ''
+    protected cmds: string = ''
+
+    private $editor: any
+
+    protected get cmdsTips() {
+        if (this.cmds) {
+            return this.cmds.split('\n').filter((item) => !!item.trim())[0]
+        } else {
+            return ''
+        }
+    }
+
+    mounted() {
+        this.initEditor()
+        this.input = this.term.title
+        this.$editor.setValue(this.term.cmds)
+    }
+
+    protected submit() {
+        const terms = motx.getState('terminals')
+        const target = terms.find((item) => item.id === this.term.id)
+        Object.assign(target, {
+            cmds: this.cmds,
+            title: this.input
+        })
+        motx.setState('terminals', terms)
+        this.$emit('submited')
+    }
+
+    protected initEditor() {
+        this.$editor = CodeMirror.fromTextArea(this.$refs.textarea, {
+            mode: 'shell',
+            height: '100%',
+            lineNumbers: true,
+            matchBrackets: true,
+            theme: 'base16-dark',
+            extraKeys: {
+                Enter: 'newlineAndIndentContinueMarkdownList'
+            }
+        })
+
+        this.$editor.on('change', (e) => {
+            const art = e.getValue()
+            this.cmds = art
+        })
+    }
+}
+</script>
+<style lang="stylus">
+headerHeight = 28px
+.terminal-wrapper
+  &.focus
+    .te-header
+      .te-title-input
+        background-color rgba(255, 255, 255, 0.1)
+  .terminal-edit
+    height 100%
+  .te-header
+    padding 0
+    .te-submit
+      line-height headerHeight
+      padding 0 10px
+      color #ccc
+      cursor pointer
+      background-color rgba(255, 255, 255, 0.3)
+      transition background 0.2s
+      &:hover
+        background-color rgba(255, 255, 255, 0.2)
+    .te-cmds-tips
+      line-height headerHeight
+      text-align center
+      text-overflow ellipsis
+      overflow hidden
+      white-space nowrap
+      color #666
+      span
+        padding 0 10px
+    .te-title-input
+      height headerHeight
+      line-height headerHeight
+      background-color rgba(0, 0, 0, 0.3)
+      border 1px solid rgba(255, 255, 255, 0)
+      color #cccccc
+      font-size 13px
+      padding-left 20px
+  .te-editor-wrapper
+    padding-top 10px
+    height calc(100% -10px)
+    .CodeMirror
+      height 100%
+      font-family Menlo, Monaco, 'Courier New', monospace
+</style>

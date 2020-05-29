@@ -6,8 +6,8 @@ const motx = new MotX({
     isolate: false,
     store: {
         terminals: [
-            { id: terminalUid++, title: 'HomeApp', pwd: '' },
-            { id: terminalUid++, title: 'Terminal', pwd: '' }
+            { id: terminalUid++, title: 'HomeApp', cmds: '' },
+            { id: terminalUid++, title: 'Terminal', cmds: '' }
         ],
         focused: [1]
     },
