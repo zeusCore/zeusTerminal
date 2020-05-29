@@ -65,15 +65,17 @@ export default class MDEditor extends Vue {
         if (this.timo) {
             clearTimeout(this.timo)
         }
-        this.toolsShow = true
-        this.toolsDisabled = false
-        this.toolsLeft = e.pageX + 20
-        this.toolsTop = e.pageY - 50
-        this.timo = setTimeout(() => {
-            this.toolsShow = false
-            this.toolsDisabled = true
-            this.timo = null
-        }, 2000)
+        if (this.selected) {
+            this.toolsShow = true
+            this.toolsDisabled = false
+            this.toolsLeft = e.pageX + 20
+            this.toolsTop = e.pageY - 50
+            this.timo = setTimeout(() => {
+                this.toolsShow = false
+                this.toolsDisabled = true
+                this.timo = null
+            }, 2000)
+        }
     }
 
     protected handleToolsFixed() {
@@ -105,15 +107,13 @@ export default class MDEditor extends Vue {
         )
 
         this.$editor.on('beforeSelectionChange', (e) => {
-            setTimeout(() => {
-                this.selected = this.$editor.getSelection()
-                if (!this.selected) {
-                    const pos = this.$editor.getCursor()
-                    const line = this.$editor.getLine(pos.line)
-                    this.selected = line.trim()
-                }
-                console.log(this.selected)
-            }, 100)
+            this.selected = this.$editor.getSelection()
+            if (!this.selected) {
+                const pos = this.$editor.getCursor()
+                const line = this.$editor.getLine(pos.line)
+                this.selected = line.trim()
+            }
+            console.log(this.selected)
         })
 
         this.$editor.on('change', (e) => {
