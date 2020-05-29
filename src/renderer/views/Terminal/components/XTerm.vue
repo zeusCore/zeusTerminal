@@ -188,6 +188,7 @@ export default class XTerm extends Vue {
     .xterm-wrapper
       .xterm-header
         opacity 1
+        background-color rgba(0, 0, 0, 1)
 .xterm-wrapper
   width 100%
   height 100%
