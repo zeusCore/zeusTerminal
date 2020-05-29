@@ -209,6 +209,9 @@ export default class XTerm extends Vue {
         color #ccc
         transition background 0.2s
         cursor pointer
+        border-bottom-left-radius 5px
+        i
+          font-size 13px
         &:hover
           background-color rgba(255, 255, 255, 0.1)
   .xterm-area
