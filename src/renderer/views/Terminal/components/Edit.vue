@@ -6,7 +6,7 @@
       <input type="text"
              v-model="input"
              class="te-title-input">
-      <div class="te-cmds-tips"><span>{{cmdsTips}}</span></div>
+      <div class="te-cmds-tips"> {{cmdsTips}} </div>
       <div class="te-submit"
            @click="submit">Save</div>
     </section>
@@ -25,7 +25,7 @@ Wait-1: wait 1 seconds, Wait-10: wait 10 seconds"></textarea>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import motx from '@/motx'
-
+import { cleanCmds } from '@/lib'
 declare const CodeMirror: any
 
 @Component({ components: {} })
@@ -40,8 +40,12 @@ export default class TerminalEditor extends Vue {
     private $editor: any
 
     protected get cmdsTips() {
-        if (this.cmds) {
-            return this.cmds.split('\n').filter((item) => !!item.trim())[0]
+        const cmds = cleanCmds(this.cmds)
+        if (cmds) {
+            return cmds
+                .split(/\n/g)
+                .join(' ')
+                .substr(0, 50)
         } else {
             return ''
         }
@@ -109,6 +113,7 @@ headerHeight = 28px
       text-overflow ellipsis
       overflow hidden
       white-space nowrap
+      padding 0 10px
       color #666
       span
         padding 0 10px

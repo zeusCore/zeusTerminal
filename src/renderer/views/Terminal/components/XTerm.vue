@@ -3,9 +3,10 @@
   <section class="xterm-wrapper"
            flex="dir:top box:first">
     <section class="xterm-header"
-             flex="">
-      <div class="left">{{term.title}}</div>
-      <div class="right">
+             flex="mian:justify box:mean">
+      <div class="left"><span class="title">{{term.title}}</span></div>
+      <div class="right"
+           flex="dir:right ">
         <div class="term-btn"><i class="icon icon-more"></i></div>
       </div>
     </section>
@@ -188,11 +189,21 @@ export default class XTerm extends Vue {
   .xterm-header
     width 100%
     line-height 20px
-    padding 0 10px
+    padding 0
     font-size 13px
     .left
       height 20px
       color #ccc
+      .title
+        margin-left 10px
+    .right
+      .term-btn
+        padding 0 10px
+        color #ccc
+        transition background 0.2s
+        cursor pointer
+        &:hover
+          background-color rgba(255, 255, 255, 0.1)
   .xterm-area
     height 100%
     padding 5px

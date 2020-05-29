@@ -26,7 +26,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import motx from '@/motx'
 import cmds from '@/data/cmds'
-
+import { cleanCmds } from '@/lib'
 declare const CodeMirror: any
 
 window.localStorage.cmds = window.localStorage.cmds || cmds
@@ -118,11 +118,11 @@ export default class MDEditor extends Vue {
 
         this.$editor.on('beforeSelectionChange', (e) => {
             setTimeout(() => {
-                this.selected = this.cleanLine(this.$editor.getSelection())
+                this.selected = cleanCmds(this.$editor.getSelection())
                 if (!this.selected) {
                     const pos = this.$editor.getCursor()
                     const line = this.$editor.getLine(pos.line)
-                    this.selected = this.cleanLine(line)
+                    this.selected = cleanCmds(line)
                 }
                 console.log(this.selected)
             }, 30)
@@ -134,27 +134,6 @@ export default class MDEditor extends Vue {
                 window.localStorage.cmds = art || ''
             }
         })
-    }
-
-    protected cleanLine(cmd: string) {
-        console.log(cmd.split(/[\n\r]/g))
-        const cmds = cmd
-            .split(/[\n\r]/g)
-            .filter((cmd) => !!cmd.trim())
-            .map((cmd) => {
-                if (cmd.includes('#')) {
-                    return cmd.substr(0, cmd.indexOf('#')).trim()
-                } else {
-                    return cmd.trim()
-                }
-            })
-            .filter((cmd) => !!cmd)
-            .join('\n')
-
-        if (!/[a-z]/gi.test(cmds)) {
-            return ''
-        }
-        return cmds
     }
 }
 </script>
