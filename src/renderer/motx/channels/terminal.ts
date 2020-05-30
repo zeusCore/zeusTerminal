@@ -25,4 +25,13 @@ export default (motx: MotxVue) => {
         motx.setState('terminals', terminals)
     })
 
+    motx.subscribe('delete-terminal', (id: number) => {
+        const terminals: ITerminal[] = motx.getState('terminals')
+        const index = terminals.findIndex((item) => item.id === id)
+        terminals.splice(index, 1)
+        motx.setState('terminals', terminals)
+        setTimeout(() => {
+            motx.publish('terminal-fit')
+        }, 100)
+    })
 }

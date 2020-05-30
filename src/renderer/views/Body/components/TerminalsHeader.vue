@@ -3,7 +3,8 @@
            flex="main:justify">
     <ul class="t-h-left"
         flex>
-      <li> </li>
+      <li><i class="icon icon-col-2"></i></li>
+      <li><i class="icon icon-col-3"></i></li>
     </ul>
     <ul class="t-h-right"
         flex>

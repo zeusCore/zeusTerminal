@@ -1,15 +1,18 @@
 <template>
 
-  <section class="terminal-wrapper"
+  <section class="terminal-wrapper hover-area"
+           flex="dir:top box:first"
            @click="handleWrapperClick"
            :class="{
                 focus: iFocused
             }">
+    <XTermHeader :term="term"
+                 :editMode="editMode" />
     <XTerm :term="term"
            v-if="!editMode"></XTerm>
     <CEdit :term="term"
-           v-else
-           @submited="handleSubmited"></CEdit>
+           @submited="handleSubmited"
+           v-else></CEdit>
   </section>
 
 </template>
@@ -20,8 +23,9 @@ import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import XTerm from './components/XTerm.vue'
 import CEdit from './components/Edit.vue'
+import XTermHeader from './components/XTermHeader.vue'
 
-@Component({ components: { XTerm, CEdit } })
+@Component({ components: { XTerm, CEdit, XTermHeader } })
 export default class Terminal extends Vue {
     @State('focused') focused: number[] = []
 
@@ -31,14 +35,26 @@ export default class Terminal extends Vue {
     protected term: PlainObject
 
     protected editMode: boolean = false
+    protected $handlers: PlainObject
 
     protected get iFocused() {
         return this.focused.includes(this.term.id)
     }
 
     mounted() {
+        this.$handlers = {}
         this.focused = motx.getState('focused')
         motx.setState('focused', [this.term.id])
+        this.$handlers.edit = (id) => {
+            if (id === this.term.id) {
+                this.editMode = true
+            }
+        }
+
+        motx.subscribe('edit-script', this.$handlers.edit)
+    }
+    beforeDestroy() {
+        motx.unsubscribe('edit-script', this.$handlers.edit)
     }
 
     handleSubmited() {
@@ -56,11 +72,12 @@ export default class Terminal extends Vue {
   width 100%
   height 100%
   float left
-  min-height 200px
+  min-height 160px
   border 1px rgba(255, 255, 255, 0.1) solid
   background-color rgba(0, 0, 0, 0.8)
   opacity 0.8
   transition opacity 0.2s
+  padding-bottom 5px
   &.focus
     opacity 1
     .xterm-header

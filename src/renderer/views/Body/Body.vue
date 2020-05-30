@@ -59,6 +59,8 @@ export default class Body extends Vue {
     width 100%
     height 100%
     overflow auto
+    &>div
+      height 100%
   .term-editor
     min-width 400px
 </style>

@@ -1,8 +1,6 @@
 <template>
 
-  <section class="xterm-wrapper"
-           flex="dir:top box:first">
-    <XTermHeader :term="term" />
+  <section class="xterm-wrapper">
     <section class="xterm-area"
              @click="handleWrapperClick"
              ref="xterm"></section>
@@ -20,7 +18,7 @@ import { WebLinksAddon } from './WebLinksAddon'
 import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
-import XTermHeader from './XTermHeader.vue'
+import { cleanCmds } from '@/lib'
 
 import { spawn, IPty } from 'node-pty'
 
@@ -40,7 +38,7 @@ window.addEventListener('resize', () => {
     }
 })
 
-@Component({ components: { CTips, XTermHeader } })
+@Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('focused') focused: number[] = []
 
@@ -63,12 +61,14 @@ export default class XTerm extends Vue {
     protected bsMode: boolean = false
     protected toSetInput: string = ''
     protected checkInput: any
+    protected $handlers: PlainObject
 
     protected get iFocused() {
         return this.focused.includes(this.term.id)
     }
 
     mounted() {
+        this.$handlers = {}
         this.init()
         this.focused = motx.getState('focused')
         this.$xterm.focus()
@@ -77,6 +77,9 @@ export default class XTerm extends Vue {
     beforeDestroy() {
         this.$xterm.dispose()
         this.$pty.kill()
+        motx.unsubscribe('terminal-fit', this.$handlers.fit)
+        motx.unsubscribe('run-from-edit', this.$handlers.runFromEditor)
+        motx.unsubscribe('run-script', this.$handlers.run)
     }
 
     handleWrapperClick() {
@@ -116,12 +119,17 @@ export default class XTerm extends Vue {
             ptyProcess.resize(xterm.cols, xterm.rows)
         }, 50)
 
-        motx.subscribe('terminal-fit', (val: string) => {
+        this.$handlers.fit = () => {
             fitAddon.fit()
             ptyProcess.resize(xterm.cols, xterm.rows)
-        })
+        }
 
-        motx.subscribe('run', (val: string) => {
+        this.$handlers.run = (id) => {
+            if (id === this.term.id) {
+                ptyProcess.write(cleanCmds(this.term.cmds) + '\n')
+            }
+        }
+        this.$handlers.runFromEditor = (val) => {
             if (this.iFocused) {
                 val = val.trimStart()
                 if (val[val.length - 1] !== '\n') {
@@ -131,7 +139,11 @@ export default class XTerm extends Vue {
                 }
                 xterm.focus()
             }
-        })
+        }
+
+        motx.subscribe('terminal-fit', this.$handlers.fit)
+        motx.subscribe('run-script', this.$handlers.run)
+        motx.subscribe('run-from-edit', this.$handlers.runFromEditor)
 
         xterm.onData((data) => {
             ptyProcess.write(data)

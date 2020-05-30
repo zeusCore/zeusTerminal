@@ -8,7 +8,8 @@
       <div class="run-btn"
            :disabled="toolsDisabled"
            v-if="toolsShow"
-           @click="toRun"><i class="icon icon-run"></i></div>
+           @click="toRun"><i class="icon icon-run"></i>
+        {{ multiLines ? '执行选中行' : '执行当前行' }}</div>
     </nav>
 
     <section class="editor-wrapper"
@@ -47,6 +48,9 @@ export default class MDEditor extends Vue {
             top: this.toolsTop + 'px'
         }
     }
+    protected get multiLines() {
+        return this.selected.split('\n').length > 1
+    }
     mounted() {
         // motx.pipe('remote').publish('web-ready', '')
         this.initEditor()
@@ -57,7 +61,7 @@ export default class MDEditor extends Vue {
         if (!this.toolsDisabled) {
             const selected = this.selected
             if (this.selected) {
-                motx.publish('run', selected)
+                motx.publish('run-from-edit', selected)
                 this.toolsDisabled = true
             }
             setTimeout(() => {
@@ -152,13 +156,16 @@ export default class MDEditor extends Vue {
       color #333
       font-size 12px
       line-height 1
-      opacity 0.5
+      font-size 12px
+      opacity 0.8
       cursor pointer
       &[disabled]
         opacity 0.5
         cursor not-allowed
       &:hover
         opacity 1
+      i
+        vertical-align text-bottom
   .editor-wrapper
     height 100%
     .editor-handler

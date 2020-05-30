@@ -1,24 +1,12 @@
 <template>
-  <section class="terminal-edit"
-           flex="dir:top box:first">
-    <section class="te-header"
-             flex="box:last">
-      <input type="text"
-             v-model="input"
-             class="te-title-input">
-      <div class="te-cmds-tips"> {{cmdsTips}} </div>
-      <div class="te-submit"
-           @click="submit">Save</div>
-    </section>
-    <section class="te-editor-wrapper">
-      <textarea ref="textarea"
-                placeholder="
+  <section class="terminal-edit">
+    <textarea ref="textarea"
+              placeholder="
 
-Enter the command that executed by default or manually.
-Waiting for some seconds before executing the following command is supported.
-Wait-[seconds] 
-Wait-1: wait 1 seconds, Wait-10: wait 10 seconds"></textarea>
-    </section>
+Enter the default commands of this terminal.
+
+[wait-seconds] is supported.
+[wait-2]: wait 2 seconds, [wait-10]: wait 10 seconds"></textarea>
   </section>
 </template>
 å
@@ -38,6 +26,7 @@ export default class TerminalEditor extends Vue {
     protected cmds: string = ''
 
     private $editor: any
+    private $submitHanlder: any
 
     protected get cmdsTips() {
         const cmds = cleanCmds(this.cmds)
@@ -55,6 +44,15 @@ export default class TerminalEditor extends Vue {
         this.initEditor()
         this.input = this.term.title
         this.$editor.setValue(this.term.cmds)
+        this.$submitHanlder = (id) => {
+            if (id === this.term.id) {
+                this.submit()
+            }
+        }
+        motx.subscribe('save-script', this.$submitHanlder)
+    }
+    beforeDestroy() {
+        motx.unsubscribe('save-script', this.$submitHanlder)
     }
 
     protected submit() {
@@ -96,6 +94,7 @@ headerHeight = 28px
         background-color rgba(255, 255, 255, 0.1)
   .terminal-edit
     height 100%
+    overflow auto
   .te-header
     padding 0
     .te-submit

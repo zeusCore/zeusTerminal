@@ -60,4 +60,11 @@ body
         /* 定义右下角拖动块的样式（位置7） */
         background rgba(0, 0, 0, 0)
 .CodeMirror-placeholder
-    opacity 0.3
+    opacity 0.6
+.hover-area
+    .hover-show
+        opacity 0
+        transition opacity 0.2s
+    &:hover
+        .hover-show
+            opacity 1

@@ -6,6 +6,34 @@
   "description": "terminal",
   "glyphs": [
     {
+      "icon_id": "1842080",
+      "name": "columns",
+      "font_class": "col-3",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "8474216",
+      "name": "columns",
+      "font_class": "col-2",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
+      "icon_id": "1445238",
+      "name": "script",
+      "font_class": "script",
+      "unicode": "e88b",
+      "unicode_decimal": 59531
+    },
+    {
+      "icon_id": "6901249",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
       "icon_id": "10793034",
       "name": "add",
       "font_class": "add",
