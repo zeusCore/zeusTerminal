@@ -11,10 +11,21 @@ import { Vue, Component } from 'vue-property-decorator'
 
 import CHeader from './views/Header/Header.vue'
 import CBody from './views/Body/Body.vue'
+import motx from '@/motx'
 import 'flex.css'
 import '@/assets/font/iconfont.css'
 import '@/assets/font/iconfont.js'
 import './style/base.styl'
+
+let timo
+window.addEventListener('resize', () => {
+    if (!timo) {
+        timo = setTimeout(() => {
+            motx.publish('terminal-fit')
+            timo = null
+        }, 10)
+    }
+})
 
 @Component({ components: { CHeader, CBody } })
 export default class App extends Vue {

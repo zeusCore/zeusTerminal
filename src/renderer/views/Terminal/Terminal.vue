@@ -1,6 +1,6 @@
 <template>
-
   <section class="terminal-wrapper hover-area"
+           :style="{height:height + 'px'}"
            flex="dir:top box:first"
            @click="handleWrapperClick"
            :class="{
@@ -33,6 +33,10 @@ export default class Terminal extends Vue {
         default: () => ({})
     })
     protected term: PlainObject
+    @Prop({
+        default: 160
+    })
+    protected height: number
 
     protected editMode: boolean = false
     protected $handlers: PlainObject

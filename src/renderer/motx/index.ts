@@ -18,6 +18,7 @@ const motx = new MotX({
     },
     store: {
         terminals,
+        columns: 3,
         focused: [1]
     },
     hooks: {

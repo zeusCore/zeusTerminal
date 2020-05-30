@@ -5,16 +5,18 @@
     <div class="terminals-wrapper"
          flex="dir:top box:first">
       <TerminalsHeader></TerminalsHeader>
-      <div class="terminals">
+      <div class="terminals"
+           :class="`column-${columns}`">
         <Draggable v-model="terminals"
                    ghost-class="ghost-terminal"
                    :forceFallback="true"
                    handle=".term-drag-handler"
-                   :componentData="{attrs:{flex: 'dir:top box:mean'}}"
+                   :componentData="{}"
                    group="terminals"
                    animation:="150"
                    @end="onDragEnd">
           <CTerminal v-for="(item) in terminals"
+                     :height="terminalHeight"
                      :term="item"
                      :key="item.id" />
         </Draggable>
@@ -36,15 +38,35 @@ import Draggable from 'vuedraggable'
 @Component({ components: { CEditer, CTerminal, TerminalsHeader, Draggable } })
 export default class Body extends Vue {
     @State('terminals') terminals: PlainObject[] = []
+    @State('columns') columns: number = 1
 
+    protected winHeight: number = window.innerHeight
+
+    protected get terminalHeight() {
+        const len = this.terminals.length
+        const winHeight = this.winHeight
+        const minHeight = 160
+        const columns = this.columns
+        const rows = Math.ceil(len / columns)
+        const height =
+            (winHeight - 40) / rows > minHeight
+                ? (winHeight - 40) / rows
+                : minHeight
+        return height
+    }
     mounted() {
         this.terminals = motx.getState('terminals')
+        this.columns = motx.getState('columns')
+        motx.subscribe('terminal-fit', () => {
+            this.winHeight = window.innerHeight
+        })
     }
 
     protected onDragEnd(e) {
         console.log(JSON.parse(JSON.stringify(this.terminals)))
         motx.publish('save-terminals', this.terminals)
     }
+    protected() {}
 }
 </script>
 
@@ -59,8 +81,21 @@ export default class Body extends Vue {
     width 100%
     height 100%
     overflow auto
+    &.column-1
+      .terminal-wrapper
+        width 100%
+    &.column-2
+      .terminal-wrapper
+        width 50%
+    &.column-3
+      .terminal-wrapper
+        width 33.333%
+    &.column-4
+      .terminal-wrapper
+        width 25%
     &>div
       height 100%
+      width 100%
   .term-editor
     min-width 400px
 </style>

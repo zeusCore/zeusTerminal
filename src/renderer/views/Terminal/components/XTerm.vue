@@ -28,16 +28,6 @@ env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
 env['LC_CTYPE'] = 'zh_CN.UTF-8'
 
-let timo
-window.addEventListener('resize', () => {
-    if (!timo) {
-        timo = setTimeout(() => {
-            motx.publish('terminal-fit')
-            timo = null
-        }, 10)
-    }
-})
-
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('focused') focused: number[] = []
