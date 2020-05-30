@@ -53,13 +53,22 @@ export default class TerminalsHeader extends Vue {
   ul
     .li-group
       font-size 12px
+      color #666
+      i
+        position relative
+        top 2px
+        &.col-1
+          top 3px
+          border-color #666
     li
       padding 3px 6px
       width 30px
       cursor pointer
       text-align center
       &.active
-        background-color rgba(255, 255, 255, 0.3)
+        color #ccc
+        .col-1
+          border-color #ccc
       &:hover
         background-color rgba(255, 255, 255, 0.1)
   .col-1

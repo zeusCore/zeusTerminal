@@ -8,6 +8,9 @@ if (!terminals.length) {
     terminals.push({ id: Date.now(), title: '', cmds: '' })
 }
 
+const columns = JSON.parse(window.localStorage.columns || '1')
+const focused = JSON.parse(window.localStorage.focused || [terminals[0].id || 0])
+
 const motx = new MotX({
     name: 'main',
     isolate: true,
@@ -18,8 +21,8 @@ const motx = new MotX({
     },
     store: {
         terminals,
-        columns: 3,
-        focused: [1]
+        columns,
+        focused
     },
     hooks: {
         didPublish(channel: string, args: any[]) {
@@ -29,7 +32,9 @@ const motx = new MotX({
             // console.log('[Motx] didSetState', fieldName, newState)
             switch (fieldName) {
                 case 'terminals':
-                    window.localStorage.terminals = JSON.stringify(newState)
+                case 'columns':
+                case 'focused':
+                    window.localStorage[fieldName] = JSON.stringify(newState)
                     break;
             }
         }
