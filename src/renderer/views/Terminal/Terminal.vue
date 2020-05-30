@@ -6,7 +6,7 @@
                 focus: iFocused
             }">
     <XTerm :term="term"
-           v-if="!editMode || term.id===1"></XTerm>
+           v-if="!editMode"></XTerm>
     <CEdit :term="term"
            v-else
            @submited="handleSubmited"></CEdit>
@@ -30,7 +30,7 @@ export default class Terminal extends Vue {
     })
     protected term: PlainObject
 
-    protected editMode: boolean = true
+    protected editMode: boolean = false
 
     protected get iFocused() {
         return this.focused.includes(this.term.id)
@@ -55,6 +55,8 @@ export default class Terminal extends Vue {
 .terminal-wrapper
   width 100%
   height 100%
+  float left
+  min-height 200px
   border 1px rgba(255, 255, 255, 0.1) solid
   background-color rgba(0, 0, 0, 0.8)
   opacity 0.8

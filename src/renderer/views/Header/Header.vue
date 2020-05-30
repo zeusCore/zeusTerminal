@@ -1,7 +1,6 @@
 <template>
   <section class="term-header">
     <Topbar></Topbar>
-
   </section>
 </template>
 

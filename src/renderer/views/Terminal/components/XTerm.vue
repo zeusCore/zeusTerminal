@@ -2,14 +2,7 @@
 
   <section class="xterm-wrapper"
            flex="dir:top box:first">
-    <section class="xterm-header"
-             flex="mian:justify box:mean">
-      <div class="left"><span class="title">{{term.title}}</span></div>
-      <div class="right"
-           flex="dir:right ">
-        <div class="term-btn"><i class="icon icon-more"></i></div>
-      </div>
-    </section>
+    <XTermHeader :term="term" />
     <section class="xterm-area"
              @click="handleWrapperClick"
              ref="xterm"></section>
@@ -27,6 +20,8 @@ import { WebLinksAddon } from './WebLinksAddon'
 import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
+import XTermHeader from './XTermHeader.vue'
+
 import { spawn, IPty } from 'node-pty'
 
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
@@ -34,15 +29,18 @@ const env = process.env
 env['LC_ALL'] = 'zh_CN.UTF-8'
 env['LANG'] = 'zh_CN.UTF-8'
 env['LC_CTYPE'] = 'zh_CN.UTF-8'
-const fitAddons = []
 
+let timo
 window.addEventListener('resize', () => {
-    fitAddons.forEach((fix) => {
-        fix && fix()
-    })
+    if (!timo) {
+        timo = setTimeout(() => {
+            motx.publish('terminal-fit')
+            timo = null
+        }, 10)
+    }
 })
 
-@Component({ components: { CTips } })
+@Component({ components: { CTips, XTermHeader } })
 export default class XTerm extends Vue {
     @State('focused') focused: number[] = []
 
@@ -77,7 +75,6 @@ export default class XTerm extends Vue {
     }
 
     beforeDestroy() {
-        fitAddons.splice(fitAddons.indexOf(this.$fixAddon), 1)
         this.$xterm.dispose()
         this.$pty.kill()
     }
@@ -110,11 +107,6 @@ export default class XTerm extends Vue {
 
         const fitAddon = (this.$fixAddon = new FitAddon())
 
-        fitAddons.push(() => {
-            fitAddon.fit()
-            ptyProcess.resize(xterm.cols, xterm.rows)
-        })
-
         xterm.loadAddon(fitAddon)
         xterm.loadAddon(new WebLinksAddon())
         xterm.open(this.$refs.xterm as HTMLElement)
@@ -123,6 +115,11 @@ export default class XTerm extends Vue {
             fitAddon.fit()
             ptyProcess.resize(xterm.cols, xterm.rows)
         }, 50)
+
+        motx.subscribe('terminal-fit', (val: string) => {
+            fitAddon.fit()
+            ptyProcess.resize(xterm.cols, xterm.rows)
+        })
 
         motx.subscribe('run', (val: string) => {
             if (this.iFocused) {
@@ -183,37 +180,9 @@ export default class XTerm extends Vue {
 </script>
 
 <style lang="stylus">
-.terminal-wrapper
-  &.focus
-    .xterm-wrapper
-      .xterm-header
-        opacity 1
-        background-color rgba(0, 0, 0, 1)
 .xterm-wrapper
   width 100%
   height 100%
-  .xterm-header
-    width 100%
-    line-height 20px
-    padding 0
-    font-size 13px
-    opacity 0.5
-    .left
-      height 20px
-      color #ccc
-      .title
-        margin-left 10px
-    .right
-      .term-btn
-        padding 0 10px
-        color #ccc
-        transition background 0.2s
-        cursor pointer
-        border-bottom-left-radius 5px
-        i
-          font-size 13px
-        &:hover
-          background-color rgba(255, 255, 255, 0.1)
   .xterm-area
     height 100%
     padding 5px

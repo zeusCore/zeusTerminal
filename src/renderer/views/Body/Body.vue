@@ -1,11 +1,24 @@
 <template>
   <section class="term-body"
-           flex>
-    <div class="terminals"
-         flex="dir:top box:mean">
-      <CTerminal v-for="(item, index) in terminals"
-                 :term="item"
-                 :key="item.id" />
+           flex="box:last">
+
+    <div class="terminals-wrapper"
+         flex="dir:top box:first">
+      <TerminalsHeader></TerminalsHeader>
+      <div class="terminals">
+        <Draggable v-model="terminals"
+                   ghost-class="ghost-terminal"
+                   :forceFallback="true"
+                   handle=".term-drag-handler"
+                   :componentData="{attrs:{flex: 'dir:top box:mean'}}"
+                   group="terminals"
+                   animation:="150"
+                   @end="onDragEnd">
+          <CTerminal v-for="(item) in terminals"
+                     :term="item"
+                     :key="item.id" />
+        </Draggable>
+      </div>
     </div>
     <CEditer />
   </section>
@@ -17,19 +30,35 @@ import CEditer from '../Editor/Editor.vue'
 import CTerminal from '../Terminal/Terminal.vue'
 import { State } from 'motx/dist/motx-vue'
 import motx from '@/motx'
-@Component({ components: { CEditer, CTerminal } })
+import TerminalsHeader from './components/TerminalsHeader.vue'
+import Draggable from 'vuedraggable'
+
+@Component({ components: { CEditer, CTerminal, TerminalsHeader, Draggable } })
 export default class Body extends Vue {
     @State('terminals') terminals: PlainObject[] = []
+
     mounted() {
         this.terminals = motx.getState('terminals')
+    }
+
+    protected onDragEnd(e) {
+        console.log(JSON.parse(JSON.stringify(this.terminals)))
+        motx.publish('save-terminals', this.terminals)
     }
 }
 </script>
 
 <style lang="stylus">
+.ghost-terminal
+  opacity 0.7
 .term-body
-  .terminals
+  .terminals-wrapper
     width calc(100% - 400px)
+    height 100%
+  .terminals
+    width 100%
+    height 100%
+    overflow auto
   .term-editor
-    width 400px
+    min-width 400px
 </style>

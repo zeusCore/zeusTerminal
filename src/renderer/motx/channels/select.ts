@@ -1,6 +1,6 @@
 import MotX from 'motx/dist/motx-vue'
-import data from '../data/cmds'
-import calc from '../lib/calc-input'
+import data from '@/data/cmds'
+import calc from '@/lib/calc-input'
 
 const cmds = data
     .split('\n')

@@ -1,6 +1,5 @@
 import { app, Tray, Menu } from 'electron'
 // import AutoUpdate from './lib/AutoUpdate'
-// import AutoUpdate from './lib/AutoUpdate2'
 import updateTips from './lib//updateTips'
 import path from 'path'
 import winManager from './lib/windowManager'
@@ -26,12 +25,10 @@ if (process.env.NODE_ENV !== 'development') {
 
 app.commandLine.appendSwitch('ignore-gpu-blacklist')
 app.commandLine.appendSwitch('no-sandbox')
-app.disableDomainBlockingFor3DAPIs()
 app.commandLine.appendSwitch('enable-webgl')
 app.commandLine.appendSwitch('enable-gpu-rasterization')
 app.commandLine.appendSwitch('enable-native-gpu-memory-buffers')
 app.commandLine.appendSwitch('enable-accelerated-2d-canvas')
-app.commandLine.appendSwitch('enable-accelerated-3d-canvas')
 
 log.info('app.commandLine.appendSwitch')
 

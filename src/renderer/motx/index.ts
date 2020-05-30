@@ -1,20 +1,23 @@
 import MotX from 'motx/dist/motx-vue'
 import { ipcRenderer } from 'electron'
 
-let terminalUid = 0
+const _modules = require.context('./channels', true, /\.ts$/)
+
+const terminals: ITerminal[] = JSON.parse(window.localStorage.terminals || '[]')
+if (!terminals.length) {
+    terminals.push({ id: Date.now(), title: '', cmds: '' })
+}
+
 const motx = new MotX({
     name: 'main',
-    isolate: false,
+    isolate: true,
     pipes: {
         main(message) {
             ipcRenderer.send('MotX', message)
         }
     },
     store: {
-        terminals: [
-            { id: terminalUid++, title: 'HomeApp', cmds: '' },
-            { id: terminalUid++, title: 'Terminal', cmds: '' }
-        ],
+        terminals,
         focused: [1]
     },
     hooks: {
@@ -23,6 +26,11 @@ const motx = new MotX({
         },
         didSetState(fieldName: string, newState, isolate: boolean, store) {
             // console.log('[Motx] didSetState', fieldName, newState)
+            switch (fieldName) {
+                case 'terminals':
+                    window.localStorage.terminals = JSON.stringify(newState)
+                    break;
+            }
         }
     }
 })
@@ -31,7 +39,9 @@ ipcRenderer.on('MotX', (event, message) => {
     motx.onReceive(message)
 })
 
-require('./select').default(motx)
-require('./toast').default(motx)
+_modules.keys().forEach((item: string) => {
+    _modules(item).default(motx)
+})
+
 
 export default motx
