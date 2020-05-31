@@ -1,6 +1,5 @@
 <template>
-  <section class="term-body"
-           flex="box:last">
+  <section class="term-body">
 
     <div class="terminals-wrapper"
          flex="dir:top box:first">
@@ -22,7 +21,8 @@
         </Draggable>
       </div>
     </div>
-    <CEditer />
+    <CEditer v-if="scriptShow"
+             :class="scriptShow === 2 ? `show` : ''" />
   </section>
 </template>
 
@@ -41,6 +41,8 @@ export default class Body extends Vue {
     @State('columns') columns: number = 1
 
     protected winHeight: number = window.innerHeight
+    protected handlers: PlainObject = {}
+    protected scriptShow: number = 0
 
     protected get terminalHeight() {
         const len = this.terminals.length
@@ -49,24 +51,52 @@ export default class Body extends Vue {
         const columns = this.columns
         const rows = Math.ceil(len / columns)
         const height =
-            (winHeight - 40) / rows > minHeight
-                ? (winHeight - 40) / rows
+            (winHeight - 51) / rows > minHeight
+                ? (winHeight - 51) / rows
                 : minHeight
         return height
     }
+
     mounted() {
+        let scriptShowTimo
+        this.handlers.handleScriptShow = (show) => {
+            if (scriptShowTimo) {
+                clearTimeout(scriptShowTimo)
+                scriptShowTimo = null
+            }
+            if (show) {
+                this.scriptShow = 1
+                scriptShowTimo = setTimeout(() => {
+                    this.scriptShow = 2
+                    scriptShowTimo = null
+                }, 10)
+            } else {
+                this.scriptShow = 3
+                scriptShowTimo = setTimeout(() => {
+                    this.scriptShow = 0
+                }, 500)
+            }
+        }
+
+        this.handlers.terminalFit = () => {
+            this.winHeight = window.innerHeight
+        }
+
         this.terminals = motx.getState('terminals')
         this.columns = motx.getState('columns')
-        motx.subscribe('terminal-fit', () => {
-            this.winHeight = window.innerHeight
-        })
+        motx.subscribe('terminal-fit', this.handlers.terminalFit)
+        motx.subscribe('toggle-script', this.handlers.handleScriptShow)
+    }
+
+    protected beforeDestroy() {
+        motx.unsubscribe('terminal-fit', this.handlers.terminalFit)
+        motx.unsubscribe('toggle-script', this.handlers.handleScriptShow)
     }
 
     protected onDragEnd(e) {
         console.log(JSON.parse(JSON.stringify(this.terminals)))
         motx.publish('save-terminals', this.terminals)
     }
-    protected() {}
 }
 </script>
 
@@ -75,7 +105,6 @@ export default class Body extends Vue {
   opacity 0.7
 .term-body
   .terminals-wrapper
-    width calc(100% - 400px)
     height 100%
   .terminals
     width 100%
@@ -96,6 +125,4 @@ export default class Body extends Vue {
     &>div
       height 100%
       width 100%
-  .term-editor
-    min-width 400px
 </style>

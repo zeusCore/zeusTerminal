@@ -10,7 +10,7 @@ const qs = require('qs')
 
 const isPro = 'production' === process.env.NODE_ENV
 const proxyHost = 'books.passkee.com'
-// const proxyHost = 'tumaxapi.to8to.com'
+// const proxyHost = 'zeusapi.to8to.com'
 const pathContext = ['/api/*']
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')

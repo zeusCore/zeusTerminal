@@ -102,7 +102,7 @@ export default class MDEditor extends Vue {
             this.toolsShow = false
             this.toolsDisabled = true
             this.timo = null
-        }, 2000)
+        }, 1000)
     }
 
     protected initEditor() {
@@ -144,7 +144,16 @@ export default class MDEditor extends Vue {
 <style lang="stylus">
 // 交互样式
 .term-editor
-  height 100%
+  width 300px
+  position fixed
+  right -310px
+  top 47px
+  bottom 0
+  border solid rgba(255, 255, 255, 0.3) 2px
+  z-index 1000
+  transition right 0.3s
+  &.show
+    right 0
   .tools-bar
     position fixed
     z-index 100
@@ -169,11 +178,13 @@ export default class MDEditor extends Vue {
   .editor-wrapper
     height 100%
     .editor-handler
-      width 10px
+      width 5px
       height 100%
       background-color #151515
+      cursor col-resize
   .CodeMirror
     color #ddd
     height 100%
     font-family Menlo, Monaco, 'Courier New', monospace
+    background-color rgba(0, 0, 0, 0.8)
 </style>

@@ -26,10 +26,10 @@ export default `--------------------------------------------
 
 # npm
   # 项目初始安装
-  npm config set @tumax:registry http://192.168.1.69:4873
-  npm i --registry=http://npm.tumax.we.com/
+  npm config set @zeus:registry http://192.168.1.69:4873
+  npm i --registry=http://npm.zeus.we.com/
   # 安装指定包
-  npm i three --save --registry=http://npm.tumax.we.com/ --save
+  npm i three --save --registry=http://npm.zeus.we.com/ --save
   # 开发构建
   npm run start
 

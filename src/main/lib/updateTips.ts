@@ -11,7 +11,7 @@ export default new (class AppUpdater {
     public localPath: string = ''
     public downloadUrl: string = ''
     public latestVersion: string = ''
-    private api: string = `https://tumaxflashapi.to8to.com/api/widgets?scope=${encodeURI(
+    private api: string = `https://zeusflashapi.to8to.com/api/widgets?scope=${encodeURI(
         '桌面端-版本自动更新'
     )}`
 
@@ -75,7 +75,7 @@ export default new (class AppUpdater {
     }
     public gotoDownload() {
         shell.openExternal(
-            'https://3dstatic.t8tcdn.com/tumax-web/downloadPage.html?t=' +
+            'https://3dstatic.t8tcdn.com/zeus-web/downloadPage.html?t=' +
             Date.now()
         )
     }

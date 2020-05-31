@@ -17,7 +17,7 @@
     </template>
 
     <template slot="title">
-      Fuck Terminal
+      Zeus Terminal
     </template>
   </TitleBar>
 </template>

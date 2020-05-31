@@ -9,7 +9,7 @@ export default new (class Session {
         return this._session
     }
     public async initSession() {
-        // this._session = session.fromPartition('persist:tumax', { cache: true })
+        // this._session = session.fromPartition('persist:zeus', { cache: true })
         this._session = session.defaultSession
     }
 })()

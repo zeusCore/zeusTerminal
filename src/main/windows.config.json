@@ -2,7 +2,7 @@
     "index": {
         "height": 563,
         "useContentSize": true,
-        "transparent": true,
+        "transparent": false,
         "width": 1024,
         "frame": false,
         "minHeight": 563,

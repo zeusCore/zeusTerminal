@@ -1,5 +1,5 @@
 <template>
-  <section class="fuck-term-app"
+  <section class="zeus-term-app"
            flex="dir:top box:first">
     <CHeader></CHeader>
     <CBody></CBody>
@@ -34,9 +34,9 @@ export default class App extends Vue {
 </script>
 
 <style lang="stylus">
-html, body, .fuck-term-app, #app
+html, body, .zeus-term-app, #app
   height 100%
   background-color transparent
-.fuck-term-app
-  background-color rgba(0, 0, 0, 0.6)
+.zeus-term-app
+  background-color #000
 </style>

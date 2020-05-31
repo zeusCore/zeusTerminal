@@ -77,11 +77,11 @@ export default class Terminal extends Vue {
   height 100%
   float left
   min-height 160px
-  border 1px rgba(255, 255, 255, 0.1) solid
-  background-color rgba(0, 0, 0, 0.8)
+  border 1px rgba(255, 255, 255, 0.2) solid
   opacity 0.8
   transition opacity 0.2s
   padding-bottom 5px
+  background-color #000
   &.focus
     opacity 1
     .xterm-header

@@ -10,7 +10,7 @@
            v-if="term.title && !editTitle">{{term.title}}</div>
       <input ref="inputTitle"
              class="input-title"
-             placeholder="Unnamed"
+             placeholder="Unnamed Terminal"
              type="text"
              v-model="title"
              @change="handleTitleChange"
@@ -113,13 +113,11 @@ export default class XTerm extends Vue {
     .xterm-wrapper
       .xterm-header
         opacity 1
-        background-color rgba(0, 0, 0, 1)
   .xterm-header
     width 100%
     line-height 20px
     padding 0
     font-size 13px
-    background-color rgba(0, 0, 0, 1)
     opacity 1
     user-select none
     .left

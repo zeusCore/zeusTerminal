@@ -16,6 +16,9 @@
     <ul class="t-h-right"
         flex>
       <li @click="handleAction('add-terminal', {index:0})"><i class="icon icon-add"></i></li>
+      <li class="script-show-btn"
+          :class="{show: scriptShow}"
+          @click=" scriptShow = !scriptShow, handleAction('toggle-script', scriptShow)"><i class="icon icon-script"></i></li>
     </ul>
 
   </section>
@@ -29,6 +32,9 @@ import { State } from 'motx/dist/motx-vue'
 @Component({ components: {} })
 export default class TerminalsHeader extends Vue {
     @State('columns') columns: number = 1
+
+    protected scriptShow: boolean = false
+
     mounted() {
         this.columns = motx.getState('columns')
     }
@@ -50,10 +56,16 @@ export default class TerminalsHeader extends Vue {
 .terminal-header
   background-color rgba(0, 0, 0, 0.8)
   color #999
+  padding 3px 0
+  user-select none
   ul
     .li-group
       font-size 12px
       color #666
+      padding 2px 10px
+      li
+        padding 1px 3px
+        width 24px
       i
         position relative
         top 2px
@@ -70,12 +82,14 @@ export default class TerminalsHeader extends Vue {
         .col-1
           border-color #ccc
       &:hover
-        background-color rgba(255, 255, 255, 0.1)
+        background-color rgba(255, 255, 255, 0.2)
+      &.script-show-btn
+        &.show
+          background-color rgba(255, 255, 255, 0.3)
   .col-1
     display inline-block
     border 1px solid rgba(255, 255, 255, 0.6)
-    width 8px
-    height 14px
+    width 13px
+    height 12px
     border-radius 3px
-    vertical-align text-top
 </style>

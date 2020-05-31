@@ -188,7 +188,4 @@ export default class XTerm extends Vue {
   .xterm-area
     height 100%
     padding 5px
-    background-color #000
-    .xterm-viewport
-      background-color transparent !important
 </style>
