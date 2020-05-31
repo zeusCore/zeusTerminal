@@ -107,7 +107,7 @@ export default class XTerm extends Vue {
         setTimeout(() => {
             fitAddon.fit()
             ptyProcess.resize(xterm.cols, xterm.rows)
-        }, 50)
+        }, 500)
 
         this.$handlers.fit = () => {
             fitAddon.fit()
