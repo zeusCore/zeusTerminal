@@ -160,16 +160,16 @@ export default class MDEditor extends Vue {
     .run-btn
       display inline-block
       padding 3px
-      background-color rgba(255, 255, 255, 0.7)
+      background-color rgba(255, 255, 255, 0.8)
       border-radius 5px
       color #333
       font-size 12px
       line-height 1
       font-size 12px
-      opacity 0.8
+      opacity 0.9
       cursor pointer
       &[disabled]
-        opacity 0.5
+        opacity 0.7
         cursor not-allowed
       &:hover
         opacity 1

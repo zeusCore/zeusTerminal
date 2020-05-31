@@ -12,6 +12,7 @@
         <li :class="{active: columns === 3}"
             @click="handleAction('columns-change', 3)"><i class="icon icon-col-3"></i></li>
       </div>
+
     </ul>
     <ul class="t-h-right"
         flex>
@@ -54,7 +55,7 @@ export default class TerminalsHeader extends Vue {
 
 <style lang="stylus">
 .terminal-header
-  background-color rgba(0, 0, 0, 0.8)
+  background-color rgba(255, 255, 255, 0.1)
   color #999
   padding 3px 0
   user-select none
@@ -62,7 +63,9 @@ export default class TerminalsHeader extends Vue {
     .li-group
       font-size 12px
       color #666
-      padding 2px 10px
+      margin 2px 0
+      padding 0 15px
+      border-right solid 1px rgba(255, 255, 255, 0.2)
       li
         padding 1px 3px
         width 24px
@@ -77,6 +80,7 @@ export default class TerminalsHeader extends Vue {
       width 30px
       cursor pointer
       text-align center
+      transition all 0.2s
       &.active
         color #ccc
         .col-1
@@ -86,6 +90,7 @@ export default class TerminalsHeader extends Vue {
       &.script-show-btn
         &.show
           background-color rgba(255, 255, 255, 0.3)
+          padding-right 100px
   .col-1
     display inline-block
     border 1px solid rgba(255, 255, 255, 0.6)

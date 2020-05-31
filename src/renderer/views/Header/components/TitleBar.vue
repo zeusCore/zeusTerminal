@@ -16,7 +16,7 @@ titlebarHeight = 20px
   user-select none
   &.titlebar-style-dark
     color #999
-    background rgba(0, 0, 0, 0.6)
+    background rgba(255, 255, 255, 0.05)
   &.titlebar-style-light
     color #2c2c2c
     background #f6f6f6

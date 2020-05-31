@@ -15,7 +15,7 @@ export default class Body extends Vue {
 
 <style lang="stylus">
 .term-header
-  background-color rgba(0, 0, 0, 0.8)
+  background-color rgba(255, 255, 255, 0.05)
   -webkit-app-region drag
   .logo
     height 30px

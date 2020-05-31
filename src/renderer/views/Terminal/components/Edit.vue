@@ -3,10 +3,8 @@
     <textarea ref="textarea"
               placeholder="
 
-Enter the default commands of this terminal.
 
-[wait-seconds] is supported.
-[wait-2]: wait 2 seconds, [wait-10]: wait 10 seconds"></textarea>
+Prepare the commands you want to execute in this terminal."></textarea>
   </section>
 </template>
 å

@@ -9,10 +9,10 @@
     <XTermHeader :term="term"
                  :editMode="editMode" />
     <XTerm :term="term"
-           v-if="!editMode"></XTerm>
+           v-show="!editMode"></XTerm>
     <CEdit :term="term"
            @submited="handleSubmited"
-           v-else></CEdit>
+           v-if="editMode"></CEdit>
   </section>
 
 </template>
