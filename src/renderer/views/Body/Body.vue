@@ -43,17 +43,17 @@ export default class Body extends Vue {
     protected winHeight: number = window.innerHeight
     protected handlers: PlainObject = {}
     protected scriptShow: number = 0
+    protected minHeight: number = 160
 
     protected get terminalHeight() {
         const len = this.terminals.length
         const winHeight = this.winHeight
-        const minHeight = 160
         const columns = this.columns
         const rows = Math.ceil(len / columns)
         const height =
-            (winHeight - 51) / rows > minHeight
+            (winHeight - 51) / rows > this.minHeight
                 ? (winHeight - 51) / rows
-                : minHeight
+                : this.minHeight
         return height
     }
 
@@ -123,6 +123,6 @@ export default class Body extends Vue {
       .terminal-wrapper
         width 25%
     &>div
-      height 100%
+      min-height 100%
       width 100%
 </style>

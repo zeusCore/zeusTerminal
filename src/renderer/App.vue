@@ -18,6 +18,7 @@ import '@/assets/font/iconfont.js'
 import './style/base.styl'
 
 let timo
+let timo2
 window.addEventListener('resize', () => {
     if (!timo) {
         timo = setTimeout(() => {
@@ -25,6 +26,13 @@ window.addEventListener('resize', () => {
             timo = null
         }, 10)
     }
+    if (timo2) {
+        clearTimeout(timo2)
+    }
+    timo2 = setTimeout(() => {
+        motx.publish('terminal-fit')
+        timo2 = null
+    }, 100)
 })
 
 @Component({ components: { CHeader, CBody } })

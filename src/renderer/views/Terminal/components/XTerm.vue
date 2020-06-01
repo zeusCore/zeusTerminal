@@ -187,5 +187,5 @@ export default class XTerm extends Vue {
   height 100%
   .xterm-area
     height 100%
-    padding 5px
+    margin 5px
 </style>
