@@ -80,7 +80,6 @@ export default class Terminal extends Vue {
   border 1px rgba(255, 255, 255, 0.2) solid
   opacity 0.8
   transition opacity 0.2s
-  padding-bottom 5px
   background-color #000
   &.focus
     opacity 1

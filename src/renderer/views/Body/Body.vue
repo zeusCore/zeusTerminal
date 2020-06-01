@@ -5,6 +5,9 @@
          flex="dir:top box:first">
       <TerminalsHeader></TerminalsHeader>
       <div class="terminals"
+           :style="{
+        overflow :  terminalHeight > minHeight ? 'hidden' : 'auto'
+      }"
            :class="`column-${columns}`">
         <Draggable v-model="terminals"
                    ghost-class="ghost-terminal"
@@ -124,5 +127,6 @@ export default class Body extends Vue {
         width 25%
     &>div
       min-height 100%
+      display inline-block
       width 100%
 </style>
