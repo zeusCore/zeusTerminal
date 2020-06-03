@@ -1,20 +1,22 @@
 <template>
-  <section class="terminal-wrapper hover-area"
-           :style="{height:height + 'px'}"
-           flex="dir:top box:first"
-           @click="handleWrapperClick"
-           :class="{
-                focus: iFocused
-            }">
-    <XTermHeader :term="term"
-                 :editMode="editMode" />
-    <XTerm :term="term"
-           v-show="!editMode"></XTerm>
-    <CEdit :cmd="editCmd"
-           :terminalId="term.id"
-           @submited="handleSubmited"
-           v-if="editMode"></CEdit>
-  </section>
+    <section
+        class="terminal-wrapper hover-area"
+        :style="{ height: height + 'px' }"
+        flex="dir:top box:first"
+        @click="handleWrapperClick"
+        :class="{
+            focus: iFocused
+        }"
+    >
+        <XTermHeader :term="term" :editMode="editMode" />
+        <XTerm :term="term" v-show="!editMode"></XTerm>
+        <CEdit
+            :cmd="editCmd"
+            :terminalId="term.id"
+            @submited="handleSubmited"
+            v-if="editMode"
+        ></CEdit>
+    </section>
 </template>
 
 <script lang="ts">
@@ -89,7 +91,7 @@ export default class Terminal extends Vue {
   transition opacity 0.2s
   &.focus
     opacity 0.9
-    border 1px rgba(255, 255, 255, 0.4) solid
+    border 1px rgba(255, 255, 255, 0.3) solid
     .xterm-header
       .left
         color #fff
