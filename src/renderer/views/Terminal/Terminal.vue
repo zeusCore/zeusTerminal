@@ -10,11 +10,11 @@
                  :editMode="editMode" />
     <XTerm :term="term"
            v-show="!editMode"></XTerm>
-    <CEdit :term="term"
+    <CEdit :cmd="editCmd"
+           :terminalId="term.id"
            @submited="handleSubmited"
            v-if="editMode"></CEdit>
   </section>
-
 </template>
 
 <script lang="ts">
@@ -39,6 +39,7 @@ export default class Terminal extends Vue {
     protected height: number
 
     protected editMode: boolean = false
+    protected editCmd = {}
     protected $handlers: PlainObject
 
     protected get iFocused() {
@@ -49,8 +50,9 @@ export default class Terminal extends Vue {
         this.$handlers = {}
         this.focused = motx.getState('focused')
         motx.setState('focused', [this.term.id])
-        this.$handlers.edit = (id) => {
+        this.$handlers.edit = (id, cmd: ICmd) => {
             if (id === this.term.id) {
+                this.editCmd = cmd
                 this.editMode = true
             }
         }
@@ -80,9 +82,9 @@ export default class Terminal extends Vue {
   border 1px rgba(255, 255, 255, 0.2) solid
   opacity 0.8
   transition opacity 0.2s
-  background-color #000
   &.focus
-    opacity 1
+    opacity 0.9
+    border 1px rgba(255, 255, 255, 0.4) solid
     .xterm-header
       .left
         color #fff

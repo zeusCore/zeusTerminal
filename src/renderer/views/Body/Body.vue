@@ -89,6 +89,9 @@ export default class Body extends Vue {
         this.columns = motx.getState('columns')
         motx.subscribe('terminal-fit', this.handlers.terminalFit)
         motx.subscribe('toggle-script', this.handlers.handleScriptShow)
+        setTimeout(() => {
+            motx.setState('focused', [this.terminals[0].id])
+        }, 500)
     }
 
     protected beforeDestroy() {

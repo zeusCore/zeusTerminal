@@ -8,7 +8,8 @@
          @click="handleBtnClick">
       <slot name="btn"></slot>
     </div>
-    <ul class="dropdown-list">
+    <ul class="dropdown-list"
+        flex="dir:top">
       <slot name="list"></slot>
     </ul>
   </div>
@@ -60,15 +61,26 @@ export default class XTerm extends Vue {
   .dropdown-list
     z-index 1000
     display none
-    background-color rgba(0, 0, 0, 0.8)
+    background-color rgba(0, 0, 0, 0.95)
     color #cccccc
     border solid 1px rgba(255, 255, 255, 0.2)
     position absolute
-    left -50px
+    right 0
     padding 5px
     min-width 80px
     font-size 12px
     li
+      padding 3px 10px
+      white-space nowrap
+      &>i.icon
+        margin-right 5px
+      &.line
+        width 100%
+        height 1px
+        padding 0
+        background-color rgba(255, 255, 255, 0.3)
+        margin 5px 0
+        overflow hidden
       &:hover
         background-color rgba(255, 255, 255, 0.3)
 </style>

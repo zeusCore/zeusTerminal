@@ -20,13 +20,30 @@
     <div class="right"
          flex="main:right ">
       <template v-if="!editMode">
-        <div class="term-btn hover-show"
-             title="Exec Script"
-             v-if="!!term.cmds.trim()"
-             @click="handleAction('run-script')"><i class="icon icon-play1"></i></div>
+
         <div class="term-btn  hover-show"
              title="Edit Script"
-             @click="handleAction('edit-script')"><i class="icon icon-edit"></i></div>
+             @click="handleAddScript()"><i class="icon icon-add"></i></div>
+
+        <Dropdown :hoverMode="true"
+                  key="cmds"
+                  class="cmds"
+                  v-if="term.cmds[0] && term.cmds[0].shell.trim()">
+          <div class="term-btn hover-show"
+               slot="btn"
+               title="Exec Script"><i class="icon icon-play1"></i></div>
+          <template slot="list">
+            <div class="cmd-item"
+                 v-for="(item, i) in term.cmds">
+              <div class="remove-btn"
+                   @click="handleAction('delete-terminal-cmd', item.id)"><i class="icon icon-remove"></i></div>
+              <div class="edit-btn"
+                   @click="handleAction('edit-script', item)"><i class="icon icon-edit"></i></div>
+              <div class="play-btn"
+                   @click="handleAction('run-script', item.shell)"><i class="icon icon-play1"></i>{{item.label}}</div>
+            </div>
+          </template>
+        </Dropdown>
 
       </template>
       <template v-else>
@@ -34,15 +51,22 @@
              @click="handleAction('save-script')"><i style="font-size: 16px;"
              class="icon icon-save"></i></div>
       </template>
-      <div class="term-btn">
-        <Dropdown>
-          <i class="icon icon-more"
-             slot="btn"></i>
-          <template slot="list">
-            <li @click="handleAction('delete-terminal')"><i class="icon icon-remove"></i> Delete</li>
-          </template>
-        </Dropdown>
-      </div>
+      <Dropdown :hoverMode="true"
+                class="more-btn"
+                key="btns">
+        <div class="term-btn"
+             slot="btn">
+          <i class="icon icon-more"></i></div>
+        <template slot="list">
+          <li class="pointer"
+              @click="handleAction('copy-terminal')"><i style="font-size: 12px;"
+               class="icon icon-copy"></i> Copy</li>
+          <li class="line"></li>
+          <li class="pointer"
+              @click="handleAction('delete-terminal')"><i style="font-size: 13px;"
+               class="icon icon-remove"></i> Delete</li>
+        </template>
+      </Dropdown>
     </div>
   </section>
 
@@ -69,8 +93,8 @@ export default class XTerm extends Vue {
     protected firstClick: boolean = false
     protected timo: any
 
-    protected handleAction(action) {
-        motx.publish(action, this.term.id)
+    protected handleAction(action, arg) {
+        motx.publish(action, this.term.id, arg)
     }
 
     protected handleTitleClick() {
@@ -92,6 +116,17 @@ export default class XTerm extends Vue {
                 el.select()
             })
         }
+    }
+
+    protected handleAddScript() {
+        motx.publish('add-terminal-cmd', this.term.id)
+        setTimeout(() => {
+            motx.publish(
+                'edit-script',
+                this.term.id,
+                this.term.cmds[this.term.cmds.length - 1]
+            )
+        }, 100)
     }
 
     protected handleTitleBlur(e) {
@@ -155,6 +190,44 @@ export default class XTerm extends Vue {
         &.border
           border 1px solid rgba(255, 255, 255, 0.5)
     .right
+      .more-btn
+        font-size 12px
+      .cmds
+        background-color #000
+        .dropdown-list
+          max-height 135px
+          overflow auto
+          background-color #000
+        .cmd-item
+          width 170px
+          &>div
+            float left
+            display inline-block
+            height 24px
+            line-height 24px
+            padding 0 5px
+            cursor pointer
+            i.icon
+              position relative
+              top 1px
+            &:hover
+              background-color rgba(255, 255, 255, 0.2)
+          .play-btn
+            width 120px
+            overflow hidden
+            text-overflow ellipsis
+            white-space nowrap
+          .edit-btn
+            width 25px
+          .remove-btn
+            width 25px
+        i.icon
+          font-size 13px
+          margin-right 5px
+      .dropdown
+        &:hover
+          .term-btn
+            background-color rgba(255, 255, 255, 0.2)
       .term-btn
         padding 0 10px
         color #ccc

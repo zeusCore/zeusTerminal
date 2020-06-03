@@ -6,6 +6,13 @@
   "description": "terminal",
   "glyphs": [
     {
+      "icon_id": "1567505",
+      "name": "copy_1",
+      "font_class": "copy",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
       "icon_id": "1842080",
       "name": "columns",
       "font_class": "col-3",

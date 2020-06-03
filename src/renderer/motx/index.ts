@@ -5,11 +5,17 @@ const _modules = require.context('./channels', true, /\.ts$/)
 
 const terminals: ITerminal[] = JSON.parse(window.localStorage.terminals || '[]')
 if (!terminals.length) {
-    terminals.push({ id: Date.now(), title: '', cmds: '' })
+    terminals.push({
+        id: Date.now(),
+        title: '',
+        cmds: []
+    })
 }
 
 const columns = JSON.parse(window.localStorage.columns || '1')
-const focused = JSON.parse(window.localStorage.focused || [terminals[0].id || 0])
+const focused = JSON.parse(
+    window.localStorage.focused || [terminals[0].id || 0]
+)
 
 const motx = new MotX({
     name: 'main',
@@ -35,7 +41,7 @@ const motx = new MotX({
                 case 'columns':
                 case 'focused':
                     window.localStorage[fieldName] = JSON.stringify(newState)
-                    break;
+                    break
             }
         }
     }
@@ -48,6 +54,5 @@ ipcRenderer.on('MotX', (event, message) => {
 _modules.keys().forEach((item: string) => {
     _modules(item).default(motx)
 })
-
 
 export default motx

@@ -16,7 +16,7 @@
     </ul>
     <ul class="t-h-right"
         flex>
-      <li @click="handleAction('add-terminal', {index:0})"><i class="icon icon-add"></i></li>
+      <li @click="handleAction('push-terminal', {index:0})"><i class="icon icon-add"></i></li>
       <li class="script-show-btn"
           :class="{show: scriptShow}"
           @click=" scriptShow = !scriptShow, handleAction('toggle-script', scriptShow)"><i class="icon icon-script"></i></li>

@@ -11,7 +11,6 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Terminal } from 'xterm'
-import os from 'os'
 import 'xterm/css/xterm.css'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from './WebLinksAddon'
@@ -19,14 +18,9 @@ import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
 import { cleanCmds } from '@/lib'
+import getPty from './pty'
 
-import { spawn, IPty } from 'node-pty'
-
-const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash'
-const env = process.env
-env['LC_ALL'] = 'zh_CN.UTF-8'
-env['LANG'] = 'zh_CN.UTF-8'
-env['LC_CTYPE'] = 'zh_CN.UTF-8'
+import { IPty } from 'node-pty'
 
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
@@ -77,14 +71,7 @@ export default class XTerm extends Vue {
     }
 
     init() {
-        const ptyProcess = (this.$pty = spawn(shell, ['--login'], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.cwd(),
-            env: env,
-            encoding: null
-        }))
+        const ptyProcess = (this.$pty = getPty())
 
         const xterm = (this.$xterm = new Terminal({
             rows: 30,
@@ -94,6 +81,7 @@ export default class XTerm extends Vue {
             rendererType: 'canvas',
             theme: {
                 foreground: '#ccc',
+                background: '#000',
                 cursor: 'rgb(254,239,143)'
             }
         }))
@@ -114,9 +102,9 @@ export default class XTerm extends Vue {
             ptyProcess.resize(xterm.cols, xterm.rows)
         }
 
-        this.$handlers.run = (id) => {
+        this.$handlers.run = (id, shell) => {
             if (id === this.term.id) {
-                ptyProcess.write(cleanCmds(this.term.cmds) + '\n')
+                ptyProcess.write(cleanCmds(shell) + '\n')
             }
         }
         this.$handlers.runFromEditor = (val) => {
