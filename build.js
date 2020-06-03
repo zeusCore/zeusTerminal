@@ -3,13 +3,13 @@ const Platform = builder.Platform
 
 const exec = require('child_process').exec
 
-exec('rm -rf build', function (err, out) {
+exec('rm -rf build', function(err, out) {
     console.log(out)
     err && console.log(err)
 })
 
 const base = {
-    productName: 'zeus-term',
+    productName: 'zeus-terminal',
     artifactName: 'zeus-terminal-setup-${version}.${ext}',
     appId: 'com.passkee.zeus-terminal',
     copyright: 'Copyright © 2018 yun.to8to.com',
@@ -70,22 +70,22 @@ const win64 = {
     ]
 }
 
-    ; (async () => {
-        // const w32 = await builder.build({
-        //     targets: Platform.WINDOWS.createTarget(),
-        //     config: Object.assign(
-        //         {},
-        //         base,
-        //         { win: win32, nsis },
-        //         { artifactName: 'SuperBrain-Setup-ia32-${version}.${ext}' }
-        //     )
-        // })
-        const m = await builder.build({
-            targets: Platform.MAC.createTarget(),
-            config: Object.assign({}, base, { mac, dmg })
-        })
-        const w64 = await builder.build({
-            targets: Platform.WINDOWS.createTarget(),
-            config: Object.assign({}, base, { win: win64, nsis })
-        })
-    })()
+;(async () => {
+    // const w32 = await builder.build({
+    //     targets: Platform.WINDOWS.createTarget(),
+    //     config: Object.assign(
+    //         {},
+    //         base,
+    //         { win: win32, nsis },
+    //         { artifactName: 'SuperBrain-Setup-ia32-${version}.${ext}' }
+    //     )
+    // })
+    const m = await builder.build({
+        targets: Platform.MAC.createTarget(),
+        config: Object.assign({}, base, { mac, dmg })
+    })
+    const w64 = await builder.build({
+        targets: Platform.WINDOWS.createTarget(),
+        config: Object.assign({}, base, { win: win64, nsis })
+    })
+})()
