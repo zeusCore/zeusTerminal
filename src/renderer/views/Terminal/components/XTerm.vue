@@ -1,11 +1,11 @@
 <template>
-
-  <section class="xterm-wrapper">
-    <section class="xterm-area"
-             @click="handleWrapperClick"
-             ref="xterm"></section>
-  </section>
-
+    <section class="xterm-wrapper">
+        <section
+            class="xterm-area"
+            @click="handleWrapperClick"
+            ref="xterm"
+        ></section>
+    </section>
 </template>
 
 <script lang="ts">
@@ -104,14 +104,14 @@ export default class XTerm extends Vue {
 
         this.$handlers.run = (id, shell) => {
             if (id === this.term.id) {
-                ptyProcess.write(cleanCmds(shell) + '\n')
+                ptyProcess.write(cleanCmds(shell) + '\r')
             }
         }
         this.$handlers.runFromEditor = (val) => {
             if (this.iFocused) {
                 val = val.trimStart()
-                if (val[val.length - 1] !== '\n') {
-                    ptyProcess.write(val + '\n')
+                if (val[val.length - 1] !== '\r') {
+                    ptyProcess.write(val + '\r')
                 } else {
                     ptyProcess.write(val)
                 }
