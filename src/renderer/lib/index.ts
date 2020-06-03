@@ -11,7 +11,7 @@ export const cleanCmds = (cmd: string) => {
             }
         })
         .filter((cmd) => !!cmd)
-        .join('\n\r')
+        .join('\r')
 
     if (!/[a-z]/gi.test(cmds)) {
         return ''
