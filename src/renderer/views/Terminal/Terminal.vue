@@ -74,6 +74,11 @@ export default class Terminal extends Vue {
 </script>
 
 <style lang="stylus">
+.platform-win32
+  .terminal-wrapper
+    opacity 0.9
+    &.focus
+      opacity 1
 .terminal-wrapper
   width 100%
   height 100%

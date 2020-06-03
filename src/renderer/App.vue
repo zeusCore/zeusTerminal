@@ -1,5 +1,6 @@
 <template>
   <section class="zeus-term-app"
+           :class="`platform-${platform}`"
            flex="dir:top box:first">
     <CHeader></CHeader>
     <CBody></CBody>
@@ -37,6 +38,7 @@ window.addEventListener('resize', () => {
 
 @Component({ components: { CHeader, CBody } })
 export default class App extends Vue {
+    protected platform = process.platform
     mounted() {}
 }
 </script>
