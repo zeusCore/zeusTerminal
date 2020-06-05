@@ -1,17 +1,16 @@
 <template>
-  <section class="terminal-edit"
-           flex="dir:top box:first">
-    <div class="label">
-      <input type="text"
-             v-model="label"
-             placeholder="Add a label">
-    </div>
-    <textarea ref="textarea"
-              placeholder="
+    <section class="terminal-edit" flex="dir:top box:first">
+        <div class="label">
+            <input type="text" v-model="label" placeholder="Add a label" />
+        </div>
+        <textarea
+            ref="textarea"
+            placeholder="
 
 
-Prepare the commands you want to execute in this terminal."></textarea>
-  </section>
+Prepare the commands you want to execute in this terminal."
+        ></textarea>
+    </section>
 </template>
 
 <script lang="ts">

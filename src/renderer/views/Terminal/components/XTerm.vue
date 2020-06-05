@@ -1,11 +1,9 @@
 <template>
-    <section class="xterm-wrapper">
-        <section
-            class="xterm-area"
-            @click="handleWrapperClick"
-            ref="xterm"
-        ></section>
-    </section>
+  <section class="xterm-wrapper">
+    <section class="xterm-area"
+             @click="handleWrapperClick"
+             ref="xterm"></section>
+  </section>
 </template>
 
 <script lang="ts">
@@ -77,7 +75,7 @@ export default class XTerm extends Vue {
             rows: 30,
             fontSize: 12,
             lineHeight: 1.2,
-            fontFamily: `Menlo, Monaco, 'Courier New', monospace`,
+            fontFamily: `zeusMenlo, Menlo, Monaco, 'Courier New', monospace`,
             rendererType: 'canvas',
             theme: {
                 foreground: '#ccc',
