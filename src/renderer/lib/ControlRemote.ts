@@ -17,7 +17,7 @@ export default class ControlRemote extends EventEmitter {
         }
     }
     public cnnid: string = ''
-    protected $sockit: socket = null
+    protected sockit: socket = null
     constructor(cnnid: string) {
         super()
         this.cnnid = cnnid
@@ -25,19 +25,19 @@ export default class ControlRemote extends EventEmitter {
     }
 
     public send(data) {
-        this.$sockit.send({ action: 't', data })
+        this.sockit.send({ action: 't', data })
     }
 
     public resize(cols, rows) {
-        this.$sockit.send({ action: 'resize', data: { rows, cols } })
+        this.sockit.send({ action: 'resize', data: { rows, cols } })
     }
 
     public disconnect() {
-        this.$sockit.send({ action: 'disconnect' })
+        this.sockit.send({ action: 'disconnect' })
     }
 
     public mkSocket() {
-        const socket = (this.$sockit = io(
+        const socket = (this.sockit = io(
             `http://192.168.3.38:4001?master=1&cnnid=${
                 this.cnnid
             }&token=${'master'}`

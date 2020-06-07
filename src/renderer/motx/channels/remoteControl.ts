@@ -18,4 +18,7 @@ export default (motx: MotxVue) => {
     motx.subscribe('close-connection', (id, cnnid) => {
         motx.publish('delete-terminal', id)
     })
+    motx.subscribe('close-controled', (id, cnnid) => {
+        motx.publish('delete-terminal', id)
+    })
 }

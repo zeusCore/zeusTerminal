@@ -130,7 +130,7 @@ export default class XTerm extends Vue {
         })
 
         if (this.isSlave) {
-            this.$remoteControl = new RemoteControl()
+            this.$remoteControl = new RemoteControl(this.term.cnnid)
             this.$remoteControl.on('data', (data) => {
                 this.$pty.write(data)
             })

@@ -17,7 +17,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
-import XTerm from './components/XTerm.vue'
+import XTerm from './components/XTermRC.vue'
 import CEdit from './components/Edit.vue'
 import XTermHeader from './components/XTermRCHeader.vue'
 

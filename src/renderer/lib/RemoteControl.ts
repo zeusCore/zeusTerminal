@@ -1,6 +1,6 @@
 import API from '@/api'
 import EventEmitter from 'eventemitter3'
-import io from 'socket.io-client'
+import io, { socket } from 'socket.io-client'
 import motx from '@/motx'
 export default class RemoteControl extends EventEmitter {
     public static async listen() {
@@ -25,25 +25,27 @@ export default class RemoteControl extends EventEmitter {
     }
     public cnnid: string = ''
     protected listening: boolean = false
-    constructor() {
+    protected sockit: socket
+    constructor(cnnid) {
         super()
+        this.cnnid = cnnid
         this.mkSocket()
     }
 
     public send(data) {
-        this.$sockit.send({ action: 't', data })
+        this.sockit.send({ action: 't', data })
     }
 
     public disconnect() {
-        this.$sockit.send({ action: 'disconnect' })
+        this.sockit.send({ action: 'disconnect' })
     }
 
     public mkSocket() {
-        const socket = io(
+        const socket = (this.sockit = io(
             `http://192.168.3.38:4001?master=0&cnnid=${
                 this.cnnid
             }&token=${'slate'}`
-        )
+        ))
         socket.on('connect', () => {
             setTimeout(() => {
                 socket.send({
