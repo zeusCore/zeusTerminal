@@ -9,3 +9,7 @@ interface ICmd {
     label: string
     shell: string
 }
+
+interface Func {
+    (...args): any
+}
