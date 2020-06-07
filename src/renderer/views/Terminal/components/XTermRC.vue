@@ -62,12 +62,6 @@ export default class XTerm extends Vue {
         this.init()
         this.focused = motx.getState('focused')
         this.$xterm.focus()
-        if (this.isSlave) {
-            this.$remoteControl = new RemoteControl()
-            this.$remoteControl.on('data', (data) => {
-                this.$pty.write(data)
-            })
-        }
     }
 
     beforeDestroy() {
@@ -75,7 +69,6 @@ export default class XTerm extends Vue {
         this.$pty.kill()
         motx.unsubscribe('terminal-fit', this.$handlers.fit)
         motx.unsubscribe('run-from-edit', this.$handlers.runFromEditor)
-        motx.unsubscribe('run-script', this.$handlers.run)
     }
 
     handleWrapperClick() {
@@ -112,11 +105,6 @@ export default class XTerm extends Vue {
             fitAddon.fit()
         }
 
-        this.$handlers.run = (id, shell) => {
-            if (id === this.term.id) {
-                ptyProcess.write(cleanCmds(shell) + '\r')
-            }
-        }
         this.$handlers.runFromEditor = (val) => {
             if (this.iFocused) {
                 val = val.trimStart()
@@ -130,7 +118,6 @@ export default class XTerm extends Vue {
         }
 
         motx.subscribe('terminal-fit', this.$handlers.fit)
-        motx.subscribe('run-script', this.$handlers.run)
         motx.subscribe('run-from-edit', this.$handlers.runFromEditor)
 
         xterm.onData((data) => {
@@ -141,6 +128,16 @@ export default class XTerm extends Vue {
             xterm.write(data)
             this.$remoteControl.send(data)
         })
+
+        if (this.isSlave) {
+            this.$remoteControl = new RemoteControl()
+            this.$remoteControl.on('data', (data) => {
+                this.$pty.write(data)
+            })
+            this.$remoteControl.on('resize', ({ cols, rows }) => {
+                ptyProcess.resize(cols, rows)
+            })
+        }
     }
 }
 </script>
