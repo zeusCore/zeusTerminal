@@ -11,7 +11,7 @@ export default class ControlRemote extends EventEmitter {
         })
         if (data && data.id) {
             motx.publish('control-remote', {
-                cnnid: details.cnnid,
+                cnnid: data.id,
                 info: details
             })
         }

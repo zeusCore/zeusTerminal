@@ -121,7 +121,7 @@ export default class XTerm extends Vue {
             this.$controlRemote.send(data)
         })
 
-        this.$controlRemote.on('data', (cnnid, data) => {
+        this.$controlRemote.on('data', (data) => {
             xterm.write(data)
         })
     }

@@ -52,13 +52,6 @@ export default class RemoteControl extends EventEmitter {
                     action: 'standby-ready'
                 })
             }, 100)
-
-            setInterval(() => {
-                socket.send({
-                    action: 't',
-                    data: 'fuck'
-                })
-            }, 5000)
         })
         socket.on('master-ready', () => {
             this.emit('master-ready')

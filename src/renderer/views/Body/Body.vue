@@ -17,21 +17,23 @@
                    group="terminals"
                    animation:="150"
                    @end="onDragEnd">
-          <CTerminal v-for="(item) in terminals" 
+          <template v-for="(item) in terminals">
+            <CTerminal
                       v-if="!item.type"
-                     :height="terminalHeight"
-                     :term="item"
-                     :key="item.id" />
-          <CCRTerminal v-for="(item) in terminals" 
-                      v-if="item.type === 2"
-                     :height="terminalHeight"
-                     :term="item"
-                     :key="item.id" />
-          <CRCTerminal v-for="(item) in terminals" 
-                      v-if="item.type === 1"
-                     :height="terminalHeight"
-                     :term="item"
-                     :key="item.id" />
+                      :height="terminalHeight"
+                      :term="item"
+                      :key="item.id" />
+            <CCRTerminal  
+                        v-if="item.type === 2"
+                      :height="terminalHeight"
+                      :term="item"
+                      :key="item.id" />
+            <CRCTerminal  
+                        v-if="item.type === 1"
+                      :height="terminalHeight"
+                      :term="item"
+                      :key="item.id" />
+          </template>
         </Draggable>
       </div>
     </div>
