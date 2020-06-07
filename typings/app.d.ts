@@ -3,6 +3,9 @@ interface ITerminal {
     title: string
     cmds: ICmd[]
     index?: number
+    cnnid?: string
+    status?: number
+    type?: number
 }
 interface ICmd {
     id: number

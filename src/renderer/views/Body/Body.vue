@@ -17,7 +17,18 @@
                    group="terminals"
                    animation:="150"
                    @end="onDragEnd">
-          <CTerminal v-for="(item) in terminals"
+          <CTerminal v-for="(item) in terminals" 
+                      v-if="!item.type"
+                     :height="terminalHeight"
+                     :term="item"
+                     :key="item.id" />
+          <CCRTerminal v-for="(item) in terminals" 
+                      v-if="item.type === 2"
+                     :height="terminalHeight"
+                     :term="item"
+                     :key="item.id" />
+          <CRCTerminal v-for="(item) in terminals" 
+                      v-if="item.type === 1"
                      :height="terminalHeight"
                      :term="item"
                      :key="item.id" />
@@ -33,12 +44,14 @@
 import { Vue, Component } from 'vue-property-decorator'
 import CEditer from '../Editor/Editor.vue'
 import CTerminal from '../Terminal/Terminal.vue'
+import CCRTerminal from '../Terminal/CRTerminal.vue'
+import CRCTerminal from '../Terminal/RCTerminal.vue'
 import { State } from 'motx/dist/motx-vue'
 import motx from '@/motx'
 import TerminalsHeader from './components/TerminalsHeader.vue'
 import Draggable from 'vuedraggable'
 
-@Component({ components: { CEditer, CTerminal, TerminalsHeader, Draggable } })
+@Component({ components: { CEditer, CTerminal, CCRTerminal, CRCTerminal, TerminalsHeader, Draggable } })
 export default class Body extends Vue {
     @State('terminals') terminals: PlainObject[] = []
     @State('columns') columns: number = 1

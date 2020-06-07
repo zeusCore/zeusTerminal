@@ -57,6 +57,7 @@
     "electron-devtools-installer": "^2.2.4",
     "electron-log": "^3.0.9",
     "element-ui": "2.4.6",
+    "eventemitter3": "^4.0.4",
     "file-loader": "^1.1.11",
     "fix-path": "^3.0.0",
     "flex.css": "^1.1.7",

@@ -24,19 +24,19 @@
             <li class="remote-setting" @click="listenRemote">
                 <i class="icon icon-in"></i>
             </li>
-            <Dropdown class="more-btn">
+            <Dropdown class="dropdown-standby-list">
                 <li slot="btn" class="controls" @click="getStandbyList">
                     <i class="icon icon-out"></i>
                 </li>
                 <template slot="list">
-                    <li
+                    <div
                         v-for="(item, index) in standbyList"
                         :key="item.id"
-                        class="pointer"
+                        class="item pointer"
                         @click="controlRemote(item)"
                     >
                         {{ item.name }}
-                    </li>
+                    </div>
                 </template>
             </Dropdown>
         </ul>
@@ -64,7 +64,8 @@ import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
 import API from '@/api'
 import Dropdown from '@/views/components/Dropdown.vue'
-import io from 'socket.io-client'
+import ControlRemote from '@/lib/ControlRemote'
+import RemoteControl from '@/lib/RemoteControl'
 
 @Component({ components: { Dropdown } })
 export default class TerminalsHeader extends Vue {
@@ -78,41 +79,19 @@ export default class TerminalsHeader extends Vue {
         this.columns = motx.getState('columns')
     }
 
+    protected listenRemote() {
+        RemoteControl.listen()
+    }
+
+    protected controlRemote(details) {
+        ControlRemote.connect(details)
+    }
+
     protected async getStandbyList() {
         localStorage.token = 'master'
         localStorage.timespan = '123'
-        const { data, code, error } = await API.remote.standbyList()
+        const { data } = await API.remote.standbyList()
         this.standbyList = data || []
-    }
-
-    protected async controlRemote() {
-        localStorage.token = 'master'
-        localStorage.timespan = '123'
-        const { data, code, error } = await API.remote.createConnect()
-        if (data && data.id) {
-            this.cnnid = data.id
-            this.masterConnect()
-        }
-    }
-
-    protected async listenRemote() {
-        localStorage.token = 'slave'
-        localStorage.timespan = '321'
-        const { data, code, error } = await API.remote.addStandby({
-            name: 'steven-oa-mac'
-        })
-        if (data) {
-            const interv = setInterval(async () => {
-                localStorage.token = 'slave'
-                localStorage.timespan = '321'
-                const { data, code, error } = await API.remote.checkout()
-                if (data && data.connect) {
-                    this.cnnid = data.connect
-                    clearInterval(interv)
-                    this.connect()
-                }
-            }, 5000)
-        }
     }
 
     protected handleAction(action, arg) {
@@ -125,51 +104,6 @@ export default class TerminalsHeader extends Vue {
             motx.publish(action, arg)
         }
     }
-
-    protected masterConnect() {
-        var socket = io(
-            `http://192.168.3.38:4001?master=1&cnnid=${
-                this.cnnid
-            }&token=${'master'}`
-        )
-        socket.on('connect', function() {
-            console.log('connect')
-            socket.send({ channel: 'master-ready', data: {} })
-            setInterval(() => {
-                socket.send({
-                    action: 't',
-                    data: { what: 'omg' }
-                })
-            }, 2000)
-        })
-        socket.on('disconnect', function() {
-            console.log('disconnect')
-        })
-    }
-
-    protected connect() {
-        var socket = io(
-            `http://192.168.3.38:4001?master=0&cnnid=${
-                this.cnnid
-            }&token=${'slate'}`
-        )
-        socket.on('connect', function() {
-            console.log('connect')
-            socket.send({
-                channel: 'standby-ready',
-                data: {}
-            })
-            setInterval(() => {
-                socket.send({
-                    action: 't',
-                    data: { what: 'fuck' }
-                })
-            }, 2000)
-        })
-        socket.on('disconnect', function() {
-            console.log('disconnect')
-        })
-    }
 }
 </script>
 
@@ -179,6 +113,12 @@ export default class TerminalsHeader extends Vue {
   color #999
   padding 3px 0
   user-select none
+  .dropdown-standby-list
+    .dropdown-list
+      right auto
+      left -100px
+      .item
+        width 200px
   ul
     .li-group
       font-size 12px

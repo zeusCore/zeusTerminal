@@ -1,75 +1,106 @@
 <template>
-
-  <section class="xterm-header"
-           flex="mian:justify box:mean">
-    <div class="left">
-      <div class="term-drag-handler hover-show"><i class="icon icon-drag"></i></div>
-      <div class="title"
-           :class="{border: firstClick}"
-           @click="handleTitleClick"
-           v-if="term.title && !editTitle">{{term.title}}</div>
-      <input ref="inputTitle"
-             class="input-title"
-             placeholder="Unnamed Terminal"
-             type="text"
-             v-model="title"
-             @change="handleTitleChange"
-             @blur="handleTitleBlur"
-             v-else />
-    </div>
-    <div class="right"
-         flex="main:right ">
-      <template v-if="!editMode">
-
-        <div class="term-btn  hover-show"
-             title="Edit Script"
-             @click="handleAddScript()"><i class="icon icon-add"></i></div>
-
-        <Dropdown :hoverMode="true"
-                  key="cmds"
-                  class="cmds"
-                  v-if="term.cmds[0] && term.cmds[0].shell.trim()">
-          <div class="term-btn hover-show"
-               slot="btn"
-               title="Exec Script"><i class="icon icon-play1"></i></div>
-          <template slot="list">
-            <div class="cmd-item"
-                 v-for="(item, i) in term.cmds">
-              <div class="remove-btn"
-                   @click="handleAction('delete-terminal-cmd', item.id)"><i class="icon icon-remove"></i></div>
-              <div class="edit-btn"
-                   @click="handleAction('edit-script', item)"><i class="icon icon-edit"></i></div>
-              <div class="play-btn"
-                   @click="handleAction('run-script', item.shell)"><i class="icon icon-play1"></i>{{item.label}}</div>
+    <section class="xterm-header" flex="mian:justify box:mean">
+        <div class="left">
+            <div class="term-drag-handler hover-show">
+                <i class="icon icon-drag"></i>
             </div>
-          </template>
-        </Dropdown>
+            <div
+                class="title"
+                :class="{ border: firstClick }"
+                @click="handleTitleClick"
+                v-if="term.title && !editTitle"
+            >
+                {{ term.title }}
+            </div>
+            <input
+                ref="inputTitle"
+                class="input-title"
+                placeholder="Unnamed Terminal"
+                type="text"
+                v-model="title"
+                @change="handleTitleChange"
+                @blur="handleTitleBlur"
+                v-else
+            />
+        </div>
+        <div class="right" flex="main:right ">
+            <template v-if="!editMode">
+                <div
+                    class="term-btn  hover-show"
+                    title="Edit Script"
+                    @click="handleAddScript()"
+                >
+                    <i class="icon icon-add"></i>
+                </div>
 
-      </template>
-      <template v-else>
-        <div class="term-btn"
-             @click="handleAction('save-script')"><i style="font-size: 16px;"
-             class="icon icon-save"></i></div>
-      </template>
-      <Dropdown :hoverMode="true"
-                class="more-btn"
-                key="btns">
-        <div class="term-btn"
-             slot="btn">
-          <i class="icon icon-more"></i></div>
-        <template slot="list">
-          <li class="pointer"
-              @click="handleAction('copy-terminal')"><i style="font-size: 12px;"
-               class="icon icon-copy"></i> Copy</li>
-          <li class="line"></li>
-          <li class="pointer"
-              @click="handleAction('delete-terminal')"><i style="font-size: 13px;"
-               class="icon icon-remove"></i> Delete</li>
-        </template>
-      </Dropdown>
-    </div>
-  </section>
-
+                <Dropdown
+                    :hoverMode="true"
+                    key="cmds"
+                    class="cmds"
+                    v-if="term.cmds[0] && term.cmds[0].shell.trim()"
+                >
+                    <div
+                        class="term-btn hover-show"
+                        slot="btn"
+                        title="Exec Script"
+                    >
+                        <i class="icon icon-play1"></i>
+                    </div>
+                    <template slot="list">
+                        <div class="cmd-item" v-for="(item, i) in term.cmds">
+                            <div
+                                class="remove-btn"
+                                @click="
+                                    handleAction('delete-terminal-cmd', item.id)
+                                "
+                            >
+                                <i class="icon icon-remove"></i>
+                            </div>
+                            <div
+                                class="edit-btn"
+                                @click="handleAction('edit-script', item)"
+                            >
+                                <i class="icon icon-edit"></i>
+                            </div>
+                            <div
+                                class="play-btn"
+                                @click="handleAction('run-script', item.shell)"
+                            >
+                                <i class="icon icon-play1"></i>{{ item.label }}
+                            </div>
+                        </div>
+                    </template>
+                </Dropdown>
+            </template>
+            <template v-else>
+                <div class="term-btn" @click="handleAction('save-script')">
+                    <i style="font-size: 16px;" class="icon icon-save"></i>
+                </div>
+            </template>
+            <Dropdown :hoverMode="true" class="more-btn" key="btns">
+                <div class="term-btn" slot="btn">
+                    <i class="icon icon-more"></i>
+                </div>
+                <template slot="list">
+                    <li class="pointer" @click="handleAction('copy-terminal')">
+                        <i style="font-size: 12px;" class="icon icon-copy"></i>
+                        Copy
+                    </li>
+                    <li class="line"></li>
+                    <li
+                        class="pointer"
+                        @click="handleAction('delete-terminal')"
+                    >
+                        <i
+                            style="font-size: 13px;"
+                            class="icon icon-remove"
+                        ></i>
+                        Delete
+                    </li>
+                </template>
+            </Dropdown>
+        </div>
+    </section>
 </template>
 
 <script lang="ts">

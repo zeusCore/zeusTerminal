@@ -19,7 +19,8 @@ import { State } from 'motx/dist/motx-vue'
 import CTips from './Tips.vue'
 import { cleanCmds } from '@/lib'
 import getPty from './pty'
-
+import RemoteControl from '@/lib/RemoteControl'
+import { TerminalType } from '@/common/constant'
 import { IPty } from 'node-pty'
 
 @Component({ components: { CTips } })
@@ -46,9 +47,14 @@ export default class XTerm extends Vue {
     protected toSetInput: string = ''
     protected checkInput: any
     protected $handlers: PlainObject
+    protected $remoteControl: RemoteControl
 
     protected get iFocused() {
         return this.focused.includes(this.term.id)
+    }
+
+    protected get isSlave() {
+        return this.term.type === TerminalType.slave
     }
 
     mounted() {
@@ -56,6 +62,12 @@ export default class XTerm extends Vue {
         this.init()
         this.focused = motx.getState('focused')
         this.$xterm.focus()
+        if (this.isSlave) {
+            this.$remoteControl = new RemoteControl()
+            this.$remoteControl.on('data', (data) => {
+                this.$pty.write(data)
+            })
+        }
     }
 
     beforeDestroy() {
@@ -94,12 +106,10 @@ export default class XTerm extends Vue {
 
         setTimeout(() => {
             fitAddon.fit()
-            ptyProcess.resize(xterm.cols, xterm.rows)
         }, 500)
 
         this.$handlers.fit = () => {
             fitAddon.fit()
-            ptyProcess.resize(xterm.cols, xterm.rows)
         }
 
         this.$handlers.run = (id, shell) => {
@@ -129,51 +139,10 @@ export default class XTerm extends Vue {
 
         ptyProcess.on('data', (data: any) => {
             xterm.write(data)
+            this.$remoteControl.send(data)
         })
-    }
-
-    protected setInput(text, ln?: boolean) {
-        this.toSetInput = text
-        this.clearInput()
-    }
-
-    protected clearInput() {
-        this.bsMode = true
-
-        this.$pty.write(String.fromCharCode(127))
-
-        this.checkInput = (done) => {
-            if (done) {
-                this.bsMode = false
-                this.checkInput = null
-            } else {
-                this.clearInput()
-            }
-        }
-    }
-    protected getLineData(buffer, lineIndex) {
-        let line = buffer.getLine(lineIndex)
-        if (!line) {
-            return
-        }
-        let lineData = line.translateToString(true)
-        while (lineIndex > 0 && line.isWrapped) {
-            line = buffer.getLine(--lineIndex)
-            if (!line) {
-                break
-            }
-            lineData = line.translateToString(false) + lineData
-        }
-        return lineData
     }
 }
 </script>
 
-<style lang="stylus">
-.xterm-wrapper
-  width 100%
-  height 100%
-  padding 5px
-  .xterm-area
-    height 100%
-</style>
+<style lang="stylus"></style>

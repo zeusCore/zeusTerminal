@@ -142,6 +142,7 @@ export function packageReq(
                             POST: post
                         }
                         if (req.method === 'GET') {
+                            uri = url
                             data = data || {}
                             data.token = token
                             data.timespan = timespan
