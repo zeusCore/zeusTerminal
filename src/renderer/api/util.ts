@@ -5,7 +5,7 @@ import toast from '@/lib/toast'
 const HOST =
     process.env.NODE_ENV === 'production'
         ? 'https://zeus.passkee.com'
-        : 'http://localhost:4001'
+        : 'http://192.168.3.38:4001'
 
 const TEST_MODE = navigator.userAgent.indexOf('TEST_MODE') > -1
 

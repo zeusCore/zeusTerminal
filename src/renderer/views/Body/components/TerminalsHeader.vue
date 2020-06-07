@@ -127,7 +127,7 @@ export default class TerminalsHeader extends Vue {
 
     protected masterConnect() {
         var socket = io(
-            `http://localhost:4001?master=1&cnnid=${
+            `http://192.168.3.38:4001?master=1&cnnid=${
                 this.cnnid
             }&token=${'master'}`
         )
@@ -148,7 +148,7 @@ export default class TerminalsHeader extends Vue {
 
     protected connect() {
         var socket = io(
-            `http://localhost:4001?master=0&cnnid=${
+            `http://192.168.3.38:4001?master=0&cnnid=${
                 this.cnnid
             }&token=${'slate'}`
         )
