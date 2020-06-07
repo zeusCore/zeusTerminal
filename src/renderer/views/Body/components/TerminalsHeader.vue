@@ -81,7 +81,8 @@ export default class TerminalsHeader extends Vue {
     protected async getStandbyList() {
         localStorage.token = 'master'
         localStorage.timespan = '123'
-        this.standbyList = (await API.remote.standbyList().data) || []
+        const { data, code, error } = await API.remote.standbyList()
+        this.standbyList = data || []
     }
 
     protected async controlRemote() {

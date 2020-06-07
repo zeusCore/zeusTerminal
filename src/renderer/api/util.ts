@@ -134,6 +134,7 @@ export function packageReq(
                         silent: boolean = false, // 设为true屏蔽默认请求出错提示
                         rejectMode: boolean = false // 设为true请求出错将会reject处理，默认 resolve({error:e})
                     ) => {
+                        let uri
                         const token = window.localStorage.token || ''
                         const timespan = window.localStorage.timespan || ''
                         const allMethods: PlainObject = {
@@ -146,9 +147,11 @@ export function packageReq(
                             data.timespan = timespan
                         } else {
                             if (url.includes('?')) {
-                                url += `&token=${token}&timespan=${timespan}`
+                                uri =
+                                    url + `&token=${token}&timespan=${timespan}`
                             } else {
-                                url += `?token=${token}&timespan=${timespan}`
+                                uri =
+                                    url + `?token=${token}&timespan=${timespan}`
                             }
                         }
                         const _method: Func = req.postJson
@@ -159,7 +162,7 @@ export function packageReq(
                         }
                         if (rejectMode) {
                             const res = await _method(
-                                url,
+                                uri,
                                 data,
                                 req.dataType,
                                 silent
@@ -169,7 +172,7 @@ export function packageReq(
                             let res: object
                             try {
                                 res = await _method(
-                                    url,
+                                    uri,
                                     data,
                                     req.dataType,
                                     silent
