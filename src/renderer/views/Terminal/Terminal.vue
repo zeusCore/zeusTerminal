@@ -38,6 +38,11 @@ export default class Terminal extends Vue {
     })
     protected height: number
 
+    @Prop({
+        default: 1
+    })
+    protected columns: number
+
     protected editMode: boolean = false
     protected editCmd = {}
     protected $handlers: PlainObject
@@ -68,7 +73,14 @@ export default class Terminal extends Vue {
     }
 
     handleWrapperClick() {
-        motx.setState('focused', [this.term.id])
+        if (!this.focused.includes(this.term.id)) {
+            motx.setState('focused', [this.term.id])
+            if (this.columns === 1) {
+                setTimeout(() => {
+                    motx.publish('terminal-fit')
+                }, 100)
+            }
+        }
     }
 }
 </script>
@@ -84,6 +96,7 @@ export default class Terminal extends Vue {
   height 100%
   float left
   min-height 160px
+  overflow hidden
   border 1px rgba(255, 255, 255, 0.2) solid
   transition opacity 0.2s
   &.focus

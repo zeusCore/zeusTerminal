@@ -18,21 +18,21 @@
                    animation:="150"
                    @end="onDragEnd">
           <template v-for="(item) in terminals">
-            <CTerminal
-                      v-if="!item.type"
-                      :height="terminalHeight"
-                      :term="item"
-                      :key="item.id" />
-            <CCRTerminal  
-                        v-if="item.type === 2"
-                      :height="terminalHeight"
-                      :term="item"
-                      :key="item.id" />
-            <CRCTerminal  
-                        v-if="item.type === 1"
-                      :height="terminalHeight"
-                      :term="item"
-                      :key="item.id" />
+            <CTerminal v-if="!item.type"
+                       :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
+                       :columns="columns"
+                       :term="item"
+                       :key="item.id" />
+            <CCRTerminal v-if="item.type === 2"
+                         :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
+                         :columns="columns"
+                         :term="item"
+                         :key="item.id" />
+            <CRCTerminal v-if="item.type === 1"
+                         :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
+                         :columns="columns"
+                         :term="item"
+                         :key="item.id" />
           </template>
         </Draggable>
       </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import CEditer from '../Editor/Editor.vue'
 import CTerminal from '../Terminal/Terminal.vue'
 import CCRTerminal from '../Terminal/CRTerminal.vue'
@@ -53,21 +53,47 @@ import motx from '@/motx'
 import TerminalsHeader from './components/TerminalsHeader.vue'
 import Draggable from 'vuedraggable'
 
-@Component({ components: { CEditer, CTerminal, CCRTerminal, CRCTerminal, TerminalsHeader, Draggable } })
+@Component({
+    components: {
+        CEditer,
+        CTerminal,
+        CCRTerminal,
+        CRCTerminal,
+        TerminalsHeader,
+        Draggable
+    }
+})
 export default class Body extends Vue {
     @State('terminals') terminals: PlainObject[] = []
     @State('columns') columns: number = 1
+    @State('focused') focused: number[] = []
 
     protected winHeight: number = window.innerHeight
     protected handlers: PlainObject = {}
     protected scriptShow: number = 0
-    protected minHeight: number = 160
+    protected minHeight: number = 240
+    protected maxHeight: number = 240
+
+    @Watch('focused') focusedChange(val) {
+        if (this.columns === 1) {
+            const index = this.terminals.findIndex((item) => item.id === val[0])
+            const target = document.querySelector(
+                `.terminal-wrapper:nth-child(${index + 1})`
+            ) as HTMLDivElement
+            setTimeout(() => {
+                target.parentElement.parentElement.scrollTop =
+                    target.offsetTop - 49
+            }, 100)
+            console.log(target)
+        }
+    }
 
     protected get terminalHeight() {
         const len = this.terminals.length
         const winHeight = this.winHeight
         const columns = this.columns
         const rows = Math.ceil(len / columns)
+        this.maxHeight = winHeight - 51
         const height =
             (winHeight - 51) / rows > this.minHeight
                 ? (winHeight - 51) / rows

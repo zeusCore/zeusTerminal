@@ -1,11 +1,8 @@
 <template>
-    <section class="xterm-wrapper">
-        <section
-            class="xterm-area"
-            @click="handleWrapperClick"
-            ref="xterm"
-        ></section>
-    </section>
+  <section class="xterm-wrapper">
+    <section class="xterm-area"
+             ref="xterm"></section>
+  </section>
 </template>
 
 <script lang="ts">
@@ -68,10 +65,6 @@ export default class XTerm extends Vue {
         this.$pty.kill()
         motx.unsubscribe('terminal-fit', this.$handlers.fit)
         motx.unsubscribe('run-from-edit', this.$handlers.runFromEditor)
-    }
-
-    handleWrapperClick() {
-        motx.setState('focused', [this.term.id])
     }
 
     init() {
