@@ -22,7 +22,7 @@ import { IPty } from 'node-pty'
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('focused') focused: number[] = []
-    @State('culumns') culumns: number = 1
+    @State('columns') columns: number = 1
 
     @Prop({
         default: () => ({})
@@ -47,26 +47,15 @@ export default class XTerm extends Vue {
 
     protected get iFocused() {
         const focused = this.focused.includes(this.term.id)
-        if (!this.$xterm && focused && this.culumns === 1) {
-            setTimeout(() => {
-                this.init()
-                this.$xterm.focus()
-            }, 100)
-        }
         return focused
     }
 
     mounted() {
         this.$handlers = {}
         this.focused = motx.getState('focused')
-        this.culumns = motx.getState('culumns')
-        if (!this.$xterm && this.iFocused && this.culumns === 1) {
-            this.init()
-            this.$xterm.focus()
-        } else if (this.culumns !== 1) {
-            this.init()
-            this.$xterm.focus()
-        }
+        this.columns = motx.getState('columns')
+        this.init()
+        this.$xterm.focus()
     }
 
     beforeDestroy() {
@@ -115,15 +104,13 @@ export default class XTerm extends Vue {
             }
         }
         this.$handlers.runFromEditor = (val) => {
-            if (this.iFocused) {
-                val = val.trimStart()
-                if (val[val.length - 1] !== '\r') {
-                    ptyProcess.write(val + '\r')
-                } else {
-                    ptyProcess.write(val)
-                }
-                xterm.focus()
+            val = val.trimStart()
+            if (val[val.length - 1] !== '\r') {
+                ptyProcess.write(val + '\r')
+            } else {
+                ptyProcess.write(val)
             }
+            xterm.focus()
         }
 
         motx.subscribe('terminal-fit', this.$handlers.fit)

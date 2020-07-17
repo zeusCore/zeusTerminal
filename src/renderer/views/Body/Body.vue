@@ -40,12 +40,13 @@
 
         <template v-else>
           <Tabs />
-          <template v-for="(item) in terminals">
-            <CTerminal v-if="focused.includes(item.id)"
+          <section class="terminal-box">
+            <CTerminal v-for="(item) in terminals"
                        :height="focused.includes(item.id) ? maxHeight : terminalHeight"
                        :columns="1"
                        :term="item"
-                       :key="item.id" /> </template>
+                       :key="item.id" />
+          </section>
         </template>
       </div>
     </div>
@@ -55,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 import CEditer from '../Editor/Editor.vue'
 import CTerminal from '../Terminal/Terminal.vue'
 import CCRTerminal from '../Terminal/CRTerminal.vue'
@@ -158,15 +159,30 @@ export default class Body extends Vue {
     height 100%
     overflow auto
     &.column-1
-      .terminal-wrapper
-        height 0
-        width 0
-        float none
-        overflow auto
-        &.focus
+      .terminal-box
+        height 100%
+        width 100%
+        position relative
+        .terminal-wrapper
           width 100%
           height 100%
           min-height 100%
+          float none
+          overflow auto
+          z-index 0
+          position absolute
+          left 0
+          right 0
+          top 0
+          bottom 0
+          .xterm-header
+            .left > div
+              display none
+          &.focus
+            width 100%
+            height 100%
+            min-height 100%
+            z-index 1
     &.column-2
       .terminal-wrapper
         width 50%

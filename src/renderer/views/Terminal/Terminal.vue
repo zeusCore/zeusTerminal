@@ -98,6 +98,7 @@ export default class Terminal extends Vue {
   overflow hidden
   border 1px rgba(255, 255, 255, 0.2) solid
   transition opacity 0.2s
+  background #000
   &.focus
     border 1px rgba(255, 255, 255, 0.3) solid
     .xterm-header

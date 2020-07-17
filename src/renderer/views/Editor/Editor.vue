@@ -144,12 +144,12 @@ export default class MDEditor extends Vue {
 <style lang="stylus">
 // 交互样式
 .term-editor
-  width 300px
+  width 100%
   position fixed
-  right -310px
+  right -100%
   top 47px
   bottom 0
-  border solid rgba(255, 255, 255, 0.3) 2px
+  border solid rgba(255, 255, 255, 1) 1px
   z-index 1000
   transition right 0.3s
   &.show
@@ -186,5 +186,5 @@ export default class MDEditor extends Vue {
     color #ddd
     height 100%
     font-family Menlo, Monaco, 'Courier New', monospace
-    background-color rgba(0, 0, 0, 0.8)
+    background-color rgba(0, 0, 0, 1)
 </style>
