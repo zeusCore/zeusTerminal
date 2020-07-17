@@ -22,6 +22,7 @@ import { IPty } from 'node-pty'
 @Component({ components: { CTips } })
 export default class XTerm extends Vue {
     @State('focused') focused: number[] = []
+    @State('culumns') culumns: number = 1
 
     @Prop({
         default: () => ({})
@@ -45,14 +46,27 @@ export default class XTerm extends Vue {
     protected $handlers: PlainObject
 
     protected get iFocused() {
-        return this.focused.includes(this.term.id)
+        const focused = this.focused.includes(this.term.id)
+        if (!this.$xterm && focused && this.culumns === 1) {
+            setTimeout(() => {
+                this.init()
+                this.$xterm.focus()
+            }, 100)
+        }
+        return focused
     }
 
     mounted() {
         this.$handlers = {}
-        this.init()
         this.focused = motx.getState('focused')
-        this.$xterm.focus()
+        this.culumns = motx.getState('culumns')
+        if (!this.$xterm && this.iFocused && this.culumns === 1) {
+            this.init()
+            this.$xterm.focus()
+        } else if (this.culumns !== 1) {
+            this.init()
+            this.$xterm.focus()
+        }
     }
 
     beforeDestroy() {

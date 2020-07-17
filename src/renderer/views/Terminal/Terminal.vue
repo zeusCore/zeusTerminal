@@ -1,6 +1,6 @@
 <template>
   <section class="terminal-wrapper hover-area"
-           :style="{ height: height + 'px' }"
+           :style="columns !== 1 ? { height: height + 'px' } : ''"
            flex="dir:top box:first"
            @click="handleWrapperClick"
            :class="{
@@ -95,7 +95,6 @@ export default class Terminal extends Vue {
   width 100%
   height 100%
   float left
-  min-height 160px
   overflow hidden
   border 1px rgba(255, 255, 255, 0.2) solid
   transition opacity 0.2s

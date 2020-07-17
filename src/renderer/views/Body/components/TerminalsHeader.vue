@@ -1,27 +1,24 @@
 <template>
-    <section class="terminal-header" flex="main:justify">
-        <ul class="t-h-left" flex>
-            <div class="li-group" flex>
-                <li
-                    :class="{ active: columns === 1 }"
-                    @click="handleAction('columns-change', 1)"
-                >
-                    <i class="col-1"></i>
-                </li>
-                <li
-                    :class="{ active: columns === 2 }"
-                    @click="handleAction('columns-change', 2)"
-                >
-                    <i class="icon icon-col-2"></i>
-                </li>
-                <li
-                    :class="{ active: columns === 3 }"
-                    @click="handleAction('columns-change', 3)"
-                >
-                    <i class="icon icon-col-3"></i>
-                </li>
-            </div>
-            <li class="remote-setting" @click="listenRemote">
+  <section class="terminal-header"
+           flex="main:justify">
+    <ul class="t-h-left"
+        flex>
+      <div class="li-group"
+           flex>
+        <li :class="{ active: columns === 1 }"
+            @click="handleAction('columns-change', 1)">
+          <i class="col-1"></i>
+        </li>
+        <li :class="{ active: columns === 2 }"
+            @click="handleAction('columns-change', 2)">
+          <i class="icon icon-col-2"></i>
+        </li>
+        <li :class="{ active: columns === 3 }"
+            @click="handleAction('columns-change', 3)">
+          <i class="icon icon-col-3"></i>
+        </li>
+      </div>
+      <!-- <li class="remote-setting" @click="listenRemote">
                 <i class="icon icon-in"></i>
             </li>
             <Dropdown class="dropdown-standby-list">
@@ -38,24 +35,23 @@
                         {{ item.name }}
                     </div>
                 </template>
-            </Dropdown>
-        </ul>
-        <ul class="t-h-right" flex>
-            <li @click="handleAction('push-terminal', { index: 0 })">
-                <i class="icon icon-add"></i>
-            </li>
-            <li
-                class="script-show-btn"
-                :class="{ show: scriptShow }"
-                @click="
+            </Dropdown> -->
+    </ul>
+    <ul class="t-h-right"
+        flex>
+      <li @click="handleAction('push-terminal', { index: 0 })">
+        <i class="icon icon-add"></i>
+      </li>
+      <li class="script-show-btn"
+          :class="{ show: scriptShow }"
+          @click="
                     ;(scriptShow = !scriptShow),
                         handleAction('toggle-script', scriptShow)
-                "
-            >
-                <i class="icon icon-script"></i>
-            </li>
-        </ul>
-    </section>
+                ">
+        <i class="icon icon-script"></i>
+      </li>
+    </ul>
+  </section>
 </template>
 
 <script lang="ts">

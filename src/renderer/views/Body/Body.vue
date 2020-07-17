@@ -9,7 +9,9 @@
         overflow :  terminalHeight > minHeight ? 'hidden' : 'auto'
       }"
            :class="`column-${columns}`">
+
         <Draggable v-model="terminals"
+                   v-if="columns !== 1"
                    ghost-class="ghost-terminal"
                    :forceFallback="true"
                    handle=".term-drag-handler"
@@ -23,7 +25,7 @@
                        :columns="columns"
                        :term="item"
                        :key="item.id" />
-            <CCRTerminal v-if="item.type === 2"
+            <!-- <CCRTerminal v-if="item.type === 2"
                          :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
                          :columns="columns"
                          :term="item"
@@ -32,9 +34,19 @@
                          :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
                          :columns="columns"
                          :term="item"
-                         :key="item.id" />
+                         :key="item.id" /> -->
           </template>
         </Draggable>
+
+        <template v-else>
+          <Tabs />
+          <template v-for="(item) in terminals">
+            <CTerminal v-if="focused.includes(item.id)"
+                       :height="focused.includes(item.id) ? maxHeight : terminalHeight"
+                       :columns="1"
+                       :term="item"
+                       :key="item.id" /> </template>
+        </template>
       </div>
     </div>
     <CEditer v-if="scriptShow"
@@ -51,6 +63,7 @@ import CRCTerminal from '../Terminal/RCTerminal.vue'
 import { State } from 'motx/dist/motx-vue'
 import motx from '@/motx'
 import TerminalsHeader from './components/TerminalsHeader.vue'
+import Tabs from './components/Tabs.vue'
 import Draggable from 'vuedraggable'
 
 @Component({
@@ -60,6 +73,7 @@ import Draggable from 'vuedraggable'
         CCRTerminal,
         CRCTerminal,
         TerminalsHeader,
+        Tabs,
         Draggable
     }
 })
@@ -73,20 +87,6 @@ export default class Body extends Vue {
     protected scriptShow: number = 0
     protected minHeight: number = 240
     protected maxHeight: number = 240
-
-    @Watch('focused') focusedChange(val) {
-        if (this.columns === 1) {
-            const index = this.terminals.findIndex((item) => item.id === val[0])
-            const target = document.querySelector(
-                `.terminal-wrapper:nth-child(${index + 1})`
-            ) as HTMLDivElement
-            setTimeout(() => {
-                target.parentElement.parentElement.scrollTop =
-                    target.offsetTop - 49
-            }, 100)
-            console.log(target)
-        }
-    }
 
     protected get terminalHeight() {
         const len = this.terminals.length
@@ -159,7 +159,14 @@ export default class Body extends Vue {
     overflow auto
     &.column-1
       .terminal-wrapper
-        width 100%
+        height 0
+        width 0
+        float none
+        overflow auto
+        &.focus
+          width 100%
+          height 100%
+          min-height 100%
     &.column-2
       .terminal-wrapper
         width 50%
