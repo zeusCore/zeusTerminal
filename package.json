@@ -73,7 +73,7 @@
     "motx": "^3.1.4",
     "multispinner": "^0.2.1",
     "node-loader": "^0.6.0",
-    "node-sass": "^4.9.2",
+    "node-sass": "^4.13.1",
     "pm2": "^4.2.3",
     "qs": "^6.7.0",
     "rage-edit": "^1.2.0",
