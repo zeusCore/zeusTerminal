@@ -1,20 +1,22 @@
 <template>
-  <section class="terminal-wrapper hover-area"
-           :style="columns !== 1 ? { height: height + 'px' } : ''"
-           flex="dir:top box:first"
-           @click="handleWrapperClick"
-           :class="{
+    <section
+        class="terminal-wrapper hover-area"
+        :style="columns !== 1 ? { height: height + 'px' } : ''"
+        :flex="columns !== 1 ? 'dir:top box:first' : false"
+        @click="handleWrapperClick"
+        :class="{
             focus: iFocused
-        }">
-    <XTermHeader :term="term"
-                 :editMode="editMode" />
-    <XTerm :term="term"
-           v-show="!editMode"></XTerm>
-    <CEdit :cmd="editCmd"
-           :terminalId="term.id"
-           @submited="handleSubmited"
-           v-if="editMode"></CEdit>
-  </section>
+        }"
+    >
+        <XTermHeader :term="term" :editMode="editMode" />
+        <XTerm :term="term" v-show="!editMode"></XTerm>
+        <CEdit
+            :cmd="editCmd"
+            :terminalId="term.id"
+            @submited="handleSubmited"
+            v-if="editMode"
+        ></CEdit>
+    </section>
 </template>
 
 <script lang="ts">

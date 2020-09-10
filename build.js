@@ -84,8 +84,8 @@ const win64 = {
         targets: Platform.MAC.createTarget(),
         config: Object.assign({}, base, { mac, dmg })
     })
-    const w64 = await builder.build({
-        targets: Platform.WINDOWS.createTarget(),
-        config: Object.assign({}, base, { win: win64, nsis })
-    })
+    // const w64 = await builder.build({
+    //     targets: Platform.WINDOWS.createTarget(),
+    //     config: Object.assign({}, base, { win: win64, nsis })
+    // })
 })()

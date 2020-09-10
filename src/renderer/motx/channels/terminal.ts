@@ -49,6 +49,7 @@ export default (motx: MotxVue) => {
             label: '',
             shell: ''
         })
+        console.log(term)
         motx.setState('terminals', terminals)
     })
 

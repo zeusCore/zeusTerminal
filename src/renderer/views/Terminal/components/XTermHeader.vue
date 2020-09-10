@@ -37,7 +37,7 @@
                     :hoverMode="true"
                     key="cmds"
                     class="cmds"
-                    v-if="term.cmds[0] && term.cmds[0].shell.trim()"
+                    v-if="term.cmds.length"
                 >
                     <div
                         class="term-btn hover-show"
@@ -226,7 +226,7 @@ export default class XTerm extends Vue {
       .cmds
         background-color #000
         .dropdown-list
-          max-height 135px
+          max-height 235px
           overflow auto
           background-color #000
         .cmd-item

@@ -160,7 +160,7 @@ export default class Body extends Vue {
     overflow auto
     &.column-1
       .terminal-box
-        height 100%
+        height calc(100% - 25px)
         width 100%
         position relative
         .terminal-wrapper
@@ -176,6 +176,8 @@ export default class Body extends Vue {
           top 0
           bottom 0
           .xterm-header
+            position absolute
+            z-index: 10000;
             .left > div
               display none
           &.focus
@@ -183,6 +185,7 @@ export default class Body extends Vue {
             height 100%
             min-height 100%
             z-index 1
+            border none
     &.column-2
       .terminal-wrapper
         width 50%
