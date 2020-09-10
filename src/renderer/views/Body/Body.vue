@@ -1,66 +1,39 @@
 <template>
-  <section class="term-body">
-
-    <div class="terminals-wrapper"
-         flex="dir:top box:first">
-      <TerminalsHeader></TerminalsHeader>
-      <div class="terminals"
-           :style="{
-        overflow :  terminalHeight > minHeight ? 'hidden' : 'auto'
-      }"
-           :class="`column-${columns}`">
-
-        <Draggable v-model="terminals"
-                   v-if="columns !== 1"
-                   ghost-class="ghost-terminal"
-                   :forceFallback="true"
-                   handle=".term-drag-handler"
-                   :componentData="{}"
-                   group="terminals"
-                   animation:="150"
-                   @end="onDragEnd">
-          <template v-for="(item) in terminals">
-            <CTerminal v-if="!item.type"
-                       :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
-                       :columns="columns"
-                       :term="item"
-                       :key="item.id" />
-            <!-- <CCRTerminal v-if="item.type === 2"
-                         :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
-                         :columns="columns"
-                         :term="item"
-                         :key="item.id" />
-            <CRCTerminal v-if="item.type === 1"
-                         :height="columns === 1 && focused.includes(item.id) ? maxHeight : terminalHeight"
-                         :columns="columns"
-                         :term="item"
-                         :key="item.id" /> -->
-          </template>
-        </Draggable>
-
-        <template v-else>
-          <Tabs />
-          <section class="terminal-box">
-            <CTerminal v-for="(item) in terminals"
-                       :height="focused.includes(item.id) ? maxHeight : terminalHeight"
-                       :columns="1"
-                       :term="item"
-                       :key="item.id" />
-          </section>
-        </template>
-      </div>
-    </div>
-    <CEditer v-if="scriptShow"
-             :class="scriptShow === 2 ? `show` : ''" />
-  </section>
+    <section class="term-body">
+        <div class="terminals-wrapper" flex="dir:top box:first">
+            <TerminalsHeader></TerminalsHeader>
+            <div
+                class="terminals"
+                :style="{
+                    overflow: terminalHeight > minHeight ? 'hidden' : 'auto'
+                }"
+                :class="`column-${columns}`"
+            >
+                <Tabs v-if="columns === 1" />
+                <section class="terminal-box">
+                    <CTerminal
+                        v-for="item in terminals"
+                        v-if="!item.type"
+                        :height="
+                            columns === 1 && focused.includes(item.id)
+                                ? maxHeight
+                                : terminalHeight
+                        "
+                        :columns="columns"
+                        :term="item"
+                        :key="item.id"
+                    />
+                </section>
+            </div>
+        </div>
+        <CEditer v-if="scriptShow" :class="scriptShow === 2 ? `show` : ''" />
+    </section>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import CEditer from '../Editor/Editor.vue'
 import CTerminal from '../Terminal/Terminal.vue'
-import CCRTerminal from '../Terminal/CRTerminal.vue'
-import CRCTerminal from '../Terminal/RCTerminal.vue'
 import { State } from 'motx/dist/motx-vue'
 import motx from '@/motx'
 import TerminalsHeader from './components/TerminalsHeader.vue'
@@ -71,8 +44,6 @@ import Draggable from 'vuedraggable'
     components: {
         CEditer,
         CTerminal,
-        CCRTerminal,
-        CRCTerminal,
         TerminalsHeader,
         Tabs,
         Draggable
@@ -185,7 +156,6 @@ export default class Body extends Vue {
             height 100%
             min-height 100%
             z-index 1
-            border none
     &.column-2
       .terminal-wrapper
         width 50%

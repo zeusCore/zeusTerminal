@@ -1,57 +1,43 @@
 <template>
-  <section class="terminal-header"
-           flex="main:justify">
-    <ul class="t-h-left"
-        flex>
-      <div class="li-group"
-           flex>
-        <li :class="{ active: columns === 1 }"
-            @click="handleAction('columns-change', 1)">
-          <i class="col-1"></i>
-        </li>
-        <li :class="{ active: columns === 2 }"
-            @click="handleAction('columns-change', 2)">
-          <i class="icon icon-col-2"></i>
-        </li>
-        <li :class="{ active: columns === 3 }"
-            @click="handleAction('columns-change', 3)">
-          <i class="icon icon-col-3"></i>
-        </li>
-      </div>
-      <!-- <li class="remote-setting" @click="listenRemote">
-                <i class="icon icon-in"></i>
-            </li>
-            <Dropdown class="dropdown-standby-list">
-                <li slot="btn" class="controls" @click="getStandbyList">
-                    <i class="icon icon-out"></i>
+    <section class="terminal-header" flex="main:justify">
+        <ul class="t-h-left" flex>
+            <div class="li-group" flex>
+                <li
+                    :class="{ active: columns === 1 }"
+                    @click="handleAction('columns-change', 1)"
+                >
+                    <i class="col-1"></i>
                 </li>
-                <template slot="list">
-                    <div
-                        v-for="(item, index) in standbyList"
-                        :key="item.id"
-                        class="item pointer"
-                        @click="controlRemote(item)"
-                    >
-                        {{ item.name }}
-                    </div>
-                </template>
-            </Dropdown> -->
-    </ul>
-    <ul class="t-h-right"
-        flex>
-      <li @click="handleAction('push-terminal', { index: 0 })">
-        <i class="icon icon-add"></i>
-      </li>
-      <li class="script-show-btn"
-          :class="{ show: scriptShow }"
-          @click="
+                <li
+                    :class="{ active: columns === 2 }"
+                    @click="handleAction('columns-change', 2)"
+                >
+                    <i class="icon icon-col-2"></i>
+                </li>
+                <li
+                    :class="{ active: columns === 3 }"
+                    @click="handleAction('columns-change', 3)"
+                >
+                    <i class="icon icon-col-3"></i>
+                </li>
+            </div>
+        </ul>
+        <ul class="t-h-right" flex>
+            <li @click="handleAction('push-terminal', { index: 0 })">
+                <i class="icon icon-add"></i>
+            </li>
+            <li
+                class="script-show-btn"
+                :class="{ show: scriptShow }"
+                @click="
                     ;(scriptShow = !scriptShow),
                         handleAction('toggle-script', scriptShow)
-                ">
-        <i class="icon icon-script"></i>
-      </li>
-    </ul>
-  </section>
+                "
+            >
+                <i class="icon icon-script"></i>
+            </li>
+        </ul>
+    </section>
 </template>
 
 <script lang="ts">
@@ -146,7 +132,6 @@ export default class TerminalsHeader extends Vue {
       &.script-show-btn
         &.show
           background-color rgba(255, 255, 255, 0.3)
-          padding-right 100px
       &.remote-setting, &.controls
         padding 0px 6px
         &:hover, .actice

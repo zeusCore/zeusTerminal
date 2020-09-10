@@ -1,26 +1,34 @@
 <template>
-  <section class="term-editor">
-    <nav class="tools-bar"
-         @mouseenter="handleToolsFixed"
-         @mouseover="handleToolsFixed"
-         @mouseout="handleToolsToHide"
-         :style="toolsStyles">
-      <div class="run-btn"
-           :disabled="toolsDisabled"
-           v-if="toolsShow"
-           @click="toRun"><i class="icon icon-run"></i>
-        {{ multiLines ? '执行选中行' : '执行当前行' }}</div>
-    </nav>
+    <section class="term-editor">
+        <nav
+            class="tools-bar"
+            @mouseenter="handleToolsFixed"
+            @mouseover="handleToolsFixed"
+            @mouseout="handleToolsToHide"
+            :style="toolsStyles"
+        >
+            <div
+                class="run-btn"
+                :disabled="toolsDisabled"
+                v-if="toolsShow"
+                @click="toRun"
+            >
+                <i class="icon icon-run"></i>
+                {{ multiLines ? 'exec selected line ' : 'exec current line ' }}
+            </div>
+        </nav>
 
-    <section class="editor-wrapper"
-             @mouseup="handleMouseUp"
-             flex="box:first">
-      <div class="editor-handler">
-
-      </div>
-      <textarea id="code"></textarea>
+        <section
+            class="editor-wrapper"
+            @mouseup="handleMouseUp"
+            flex="dir:top box:first"
+        >
+            <div class="editor-handler">
+                <div class="title">Script</div>
+            </div>
+            <textarea id="code"></textarea>
+        </section>
     </section>
-  </section>
 </template>
 å
 <script lang="ts">
@@ -147,9 +155,8 @@ export default class MDEditor extends Vue {
   width 100%
   position fixed
   right -100%
-  top 47px
+  top 46px
   bottom 0
-  border solid rgba(255, 255, 255, 1) 1px
   z-index 1000
   transition right 0.3s
   &.show
@@ -159,7 +166,7 @@ export default class MDEditor extends Vue {
     z-index 100
     .run-btn
       display inline-block
-      padding 3px
+      padding 3px 5px
       background-color rgba(255, 255, 255, 0.8)
       border-radius 5px
       color #333
@@ -178,13 +185,19 @@ export default class MDEditor extends Vue {
   .editor-wrapper
     height 100%
     .editor-handler
-      width 5px
-      height 100%
+      width 100%
+      height 24px
       background-color #151515
       cursor col-resize
+      .title
+        height 24px;
+        line-height 24px;
+        background-color #666;
+        color #fff
+        padding 0 10px
   .CodeMirror
     color #ddd
     height 100%
     font-family Menlo, Monaco, 'Courier New', monospace
-    background-color rgba(0, 0, 0, 1)
+    background-color #000
 </style>
