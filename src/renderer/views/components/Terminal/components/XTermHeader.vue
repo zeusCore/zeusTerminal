@@ -75,6 +75,12 @@
         </div>
         <template slot="list">
           <li class="pointer"
+              @click="handleAction('slide')">
+            <i style="font-size: 12px;"
+               class="icon icon-copy"></i>
+            slide
+          </li>
+          <li class="pointer"
               @click="handleAction('copy-terminal')">
             <i style="font-size: 12px;"
                class="icon icon-copy"></i>
@@ -110,6 +116,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import motx from '@/motx'
+import { State } from 'motx/dist/motx-vue'
 import Dropdown from '@/views/components/Dropdown.vue'
 @Component({ components: { Dropdown } })
 export default class XTerm extends Vue {
@@ -122,7 +129,8 @@ export default class XTerm extends Vue {
         default: false
     })
     protected editMode: boolean
-
+    @State('focused')
+    protected focused
     protected title: string = ''
     protected editTitle: boolean = false
     protected firstClick: boolean = false

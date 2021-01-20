@@ -1,39 +1,37 @@
 <template>
-    <section class="term-body">
-        <div class="terminals-wrapper" flex="dir:top box:first">
-            <TerminalsHeader></TerminalsHeader>
-            <div
-                class="terminals"
-                :style="{
+  <section class="term-body">
+    <div class="terminals-wrapper"
+         flex="dir:top box:first">
+      <TerminalsHeader></TerminalsHeader>
+      <div class="terminals"
+           :style="{
                     overflow: terminalHeight > minHeight ? 'hidden' : 'auto'
                 }"
-                :class="`column-${columns}`"
-            >
-                <Tabs v-if="columns === 1" />
-                <section class="terminal-box">
-                    <CTerminal
-                        v-for="item in terminals"
-                        v-if="!item.type"
-                        :height="
+           :class="`column-${columns}`">
+        <Tabs v-if="columns === 1" />
+        <section class="terminal-box">
+          <CTerminal v-for="item in terminals"
+                     v-if="!item.type"
+                     :height="
                             columns === 1 && focused.includes(item.id)
                                 ? maxHeight
                                 : terminalHeight
                         "
-                        :columns="columns"
-                        :term="item"
-                        :key="item.id"
-                    />
-                </section>
-            </div>
-        </div>
-        <CEditer v-if="scriptShow" :class="scriptShow === 2 ? `show` : ''" />
-    </section>
+                     :columns="columns"
+                     :term="item"
+                     :key="item.id" />
+        </section>
+      </div>
+    </div>
+    <CEditer v-if="scriptShow"
+             :class="scriptShow === 2 ? `show` : ''" />
+  </section>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import CEditer from '../Editor/Editor.vue'
-import CTerminal from '../Terminal/Terminal.vue'
+import CEditer from './components/Editor.vue'
+import CTerminal from './components/Terminal/Terminal.vue'
 import { State } from 'motx/dist/motx-vue'
 import motx from '@/motx'
 import TerminalsHeader from './components/TerminalsHeader.vue'
@@ -148,7 +146,7 @@ export default class Body extends Vue {
           bottom 0
           .xterm-header
             position absolute
-            z-index: 10000;
+            z-index 10000
             .left > div
               display none
           &.focus

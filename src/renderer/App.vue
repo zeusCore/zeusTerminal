@@ -11,7 +11,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 import CHeader from './views/Header/Header.vue'
-import CBody from './views/Body/Body.vue'
+import CBody from './views/Body.vue'
 import motx from '@/motx'
 import 'flex.css'
 import '@/assets/font/iconfont.css'
