@@ -16,6 +16,7 @@ import motx from '@/motx'
 import 'flex.css'
 import '@/assets/font/iconfont.css'
 import '@/assets/font/iconfont.js'
+import 'element-ui/lib/theme-chalk/index.css'
 import './style/base.styl'
 
 let timo

@@ -1,53 +1,49 @@
 <template>
-    <section class="terminal-header" flex="main:justify">
-        <ul class="t-h-left" flex>
-            <div class="li-group" flex>
-                <li
-                    :class="{ active: columns === 1 }"
-                    @click="handleAction('columns-change', 1)"
-                >
-                    <i class="col-1"></i>
-                </li>
-                <li
-                    :class="{ active: columns === 2 }"
-                    @click="handleAction('columns-change', 2)"
-                >
-                    <i class="icon icon-col-2"></i>
-                </li>
-                <li
-                    :class="{ active: columns === 3 }"
-                    @click="handleAction('columns-change', 3)"
-                >
-                    <i class="icon icon-col-3"></i>
-                </li>
-            </div>
-        </ul>
-        <ul class="t-h-right" flex>
-            <li @click="handleAction('push-terminal', { index: 0 })">
-                <i class="icon icon-add"></i>
-            </li>
-            <li
-                class="script-show-btn"
-                :class="{ show: scriptShow }"
-                @click="
+  <section class="terminal-header"
+           flex="main:justify">
+    <ul class="t-h-left"
+        flex>
+      <div class="li-group"
+           flex>
+        <li :class="{ active: columns === 1 }"
+            @click="handleAction('columns-change', 1)">
+          <i class="col-1"></i>
+        </li>
+        <li :class="{ active: columns === 2 }"
+            @click="handleAction('columns-change', 2)">
+          <i class="icon icon-col-2"></i>
+        </li>
+        <li :class="{ active: columns === 3 }"
+            @click="handleAction('columns-change', 3)">
+          <i class="icon icon-col-3"></i>
+        </li>
+      </div>
+    </ul>
+    <ul class="t-h-right"
+        flex>
+      <li @click="handleAction('push-terminal', { index: 0 })">
+        <i class="icon icon-add"></i>
+      </li>
+      <li class="script-show-btn"
+          :class="{ show: scriptShow }"
+          @click="
                     ;(scriptShow = !scriptShow),
                         handleAction('toggle-script', scriptShow)
-                "
-            >
-                <i class="icon icon-script"></i>
-            </li>
-        </ul>
-    </section>
+                ">
+        <i class="icon icon-script"></i>
+      </li>
+    </ul>
+  </section>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import motx from '@/motx'
 import { State } from 'motx/dist/motx-vue'
-import API from '@/api'
+// import API from '@/api'
 import Dropdown from '@/views/components/Dropdown.vue'
-import ControlRemote from '@/lib/ControlRemote'
-import RemoteControl from '@/lib/RemoteControl'
+// import ControlRemote from '@/lib/ControlRemote'
+// import RemoteControl from '@/lib/RemoteControl'
 
 @Component({ components: { Dropdown } })
 export default class TerminalsHeader extends Vue {
@@ -61,20 +57,20 @@ export default class TerminalsHeader extends Vue {
         this.columns = motx.getState('columns')
     }
 
-    protected listenRemote() {
-        RemoteControl.listen()
-    }
+    // protected listenRemote() {
+    //     RemoteControl.listen()
+    // }
 
-    protected controlRemote(details) {
-        ControlRemote.connect(details)
-    }
+    // protected controlRemote(details) {
+    //     ControlRemote.connect(details)
+    // }
 
-    protected async getStandbyList() {
-        localStorage.token = 'master'
-        localStorage.timespan = '123'
-        const { data } = await API.remote.standbyList()
-        this.standbyList = data || []
-    }
+    // protected async getStandbyList() {
+    //     localStorage.token = 'master'
+    //     localStorage.timespan = '123'
+    //     const { data } = await API.remote.standbyList()
+    //     this.standbyList = data || []
+    // }
 
     protected handleAction(action, arg) {
         if (action === 'columns-change') {
